@@ -1,0 +1,43 @@
+/* CustomAudioPlayer.css */
+.custom-audio-player {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border-radius: 20px;
+  max-height: 43px;
+  line-height: 5px;
+  align-items: center;
+  color: #20a090;
+}
+
+.play-pause-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 20px;
+  font-size: 16px;
+  line-height: 10px;
+  color: #20a090;
+  filter: invert(49%) sepia(77%) saturate(380%) hue-rotate(123deg)
+    brightness(91%) contrast(98%);
+}
+
+.progress-bar-container {
+  flex-grow: 1;
+  background: transparent;
+  height: 10px;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: #08f;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.time {
+  margin-left: 20px;
+  font-size: 0.75em;
+}

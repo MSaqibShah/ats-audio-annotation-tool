@@ -1,0 +1,148 @@
+/* ChatApp.css */
+.chat-app {
+  font-family: "Arial", sans-serif;
+  background: transparent;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: 100px;
+}
+
+header {
+  background: #5b86e5;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 24px;
+}
+
+.messages {
+  padding: 20px;
+  height: 500px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.message.received {
+  justify-content: flex-start;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.message.sent .profile-pic {
+  margin-left: 10px;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 60px); /* accounting for image and margin */
+  margin-left: 10px; /* Space between the profile pic and the message */
+}
+
+.author-wrapper {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.message.received .author-wrapper,
+.message.received .message-content {
+  align-items: flex-start;
+}
+
+.message.sent .author-wrapper,
+.message.sent .message-content {
+  align-items: flex-end;
+}
+
+.author {
+  font-size: 0.85em;
+  color: #333;
+}
+
+.bubble {
+  position: relative;
+  padding: 10px;
+  margin-top: 4px;
+  min-height: 43px;
+}
+
+.message.received .bubble {
+  background: #f2f7fb;
+  /* color: #20a090; */
+  color: #384048;
+  align-self: flex-start;
+  border-radius: 0px 10px 10px 10px;
+}
+
+.message.sent .bubble {
+  background: #20a090;
+  color: #f2f7fb;
+  align-self: flex-end;
+  border-radius: 10px 0px 10px 10px;
+}
+
+.timestamp {
+  font-size: 0.75em;
+  color: #999;
+  position: absolute;
+  bottom: -20px;
+  right: 10px;
+}
+
+.chat-input {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input textarea {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #e5e5ea;
+  border-radius: 30px;
+  margin-right: 10px;
+  font-size: 16px;
+  background-color: #f0e8e8;
+  resize: none;
+}
+
+.chat-input button {
+  background: #20a090;
+  color: white;
+  border: none;
+  padding: 0px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 24px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.chat-input button:hover,
+.chat-input button:focus {
+  transform: scale(1.05);
+}
+
+.chat-input button:active {
+  transform: scale(0.95);
+}

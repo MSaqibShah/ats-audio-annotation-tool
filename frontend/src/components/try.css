@@ -1,0 +1,279 @@
+/* ChatApp.css */
+.chat-app {
+  font-family: "Arial", sans-serif;
+  background: transparent;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: #5b86e5;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 24px;
+}
+
+.messages {
+  padding: 20px;
+  height: 500px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 60px); /* accounting for image and margin */
+  margin-left: 10px; /* Space between the profile pic and the message */
+}
+
+.author-wrapper {
+  display: flex;
+}
+
+.message.received .author-wrapper,
+.message.received .message-content {
+  align-items: flex-start;
+}
+
+.message.sent .author-wrapper,
+.message.sent .message-content {
+  align-items: flex-end;
+}
+
+.author {
+  font-size: 0.85em;
+  color: #333;
+}
+
+.bubble {
+  position: relative;
+  padding: 10px;
+  border-radius: 18px;
+  margin-top: 4px;
+}
+
+.message.received .bubble {
+  background: #e5e5ea;
+  align-self: flex-start;
+  border-radius: 10px 10px 10px 0;
+}
+
+.message.sent .bubble {
+  background: #9eecff;
+  align-self: flex-end;
+  border-radius: 10px 10px 0 10px;
+}
+
+.timestamp {
+  font-size: 0.75em;
+  color: #999;
+  position: absolute;
+  bottom: -20px;
+  right: 10px;
+}
+
+.chat-input {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input textarea {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #e5e5ea;
+  border-radius: 30px;
+  margin-right: 10px;
+  font-size: 16px;
+  background-color: #f0e8e8;
+  resize: none;
+}
+
+.chat-input button {
+  background: #20a090;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 24px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+/* hhhhhhhhhhhhhhhhhhhhhhh */
+
+/* ChatApp.css */
+.chat-app {
+  font-family: "Arial", sans-serif;
+  background: transparent;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: #5b86e5;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 24px;
+}
+
+.messages {
+  padding: 20px;
+  height: 500px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.author-wrapper {
+  display: flex;
+}
+
+.message.received .message-content .author-wrapper {
+  justify-content: flex-start;
+}
+
+.message.sent .message-content .author-wrapper {
+  justify-content: flex-end;
+}
+
+.author {
+  font-size: 0.85em; /* Adjust the font size as needed */
+  color: #333;
+  margin-bottom: 4px; /* Space between author and message bubble */
+}
+
+.message .message-content .bubble {
+  display: flex;
+  flex-direction: column;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+.message .message-content .background {
+  display: block;
+  background: #20a090;
+  padding: 5px;
+}
+
+.message.received .message-content .background {
+  border-radius: 0px 10px 10px 10px;
+}
+
+.message.sent .message-content .background {
+  border-radius: 10px 0px 10px 10px;
+}
+.message.received .message-content .bubble {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid #e5e5ea;
+}
+
+.message .message-content audio {
+  max-width: 90%;
+}
+.message.sent .message-content .bubble {
+  align-self: flex-end;
+  color: #333;
+  border-radius: 10px 0px 10px 10px;
+}
+
+.message .message-content .content {
+  padding: 10px;
+  border-radius: 18px;
+}
+
+.message .message-content .timestamp {
+  font-size: 0.75em;
+  color: #999;
+  margin-top: 4px; /* Space between message bubble and timestamp */
+  align-self: flex-end;
+}
+
+.profile-pic {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.message-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.message.sent .message-image {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.message.sent .message-image .profile-pic {
+  align-self: flex-end;
+}
+
+.chat-input {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input textarea {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid #e5e5ea;
+  border-radius: 30px;
+  margin-right: 10px;
+  font-size: 16px;
+  background-color: #f0e8e8;
+  resize: none;
+}
+
+.chat-input button {
+  background: #20a090;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 24px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}

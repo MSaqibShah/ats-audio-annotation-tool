@@ -1,0 +1,106 @@
+.message-message {
+  width: 288px;
+  height: 98px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-shrink: 1;
+}
+.message-user-name {
+  flex: 0 0 auto;
+  width: 197.9146728515625px;
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message-container {
+  flex: 0 0 auto;
+  width: 192.45498657226562px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message-container1 {
+  flex: 0 0 auto;
+  width: 192.45498657226562px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message-message1 {
+  flex: 0 0 auto;
+  width: 192.45498657226562px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.message-message-text {
+  top: 27px;
+  left: 59px;
+  color: rgba(255, 255, 255, 1);
+  width: 162px;
+  height: auto;
+  padding: 14px;
+  position: absolute;
+  font-size: 12px;
+  font-style: Book;
+  text-align: right;
+  font-family: Circular Std;
+  font-weight: 300;
+  line-height: 12px;
+  font-stretch: normal;
+  border-radius: 10px;
+  text-decoration: none;
+  background-color: #20a090;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 10;
+  border-bottom-right-radius: 10;
+}
+.message-profile-picture {
+  top: 0px;
+  left: 222.48341369628906px;
+  right: 0px;
+  width: 55px;
+  height: 55px;
+  position: absolute;
+  border-radius: var(--dl-radius-radius-radius4);
+}
+.message-user-name-text {
+  top: 6.90972900390625px;
+  color: rgba(0, 13, 7, 1);
+  right: 81.90109634399414px;
+  width: 35px;
+  height: auto;
+  margin: auto;
+  position: absolute;
+  font-size: 14px;
+  font-style: Bold;
+  text-align: right;
+  font-family: Caros;
+  font-weight: 700;
+  line-height: 14px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.message-time {
+  top: 72px;
+  left: 145px;
+  color: rgba(121, 124, 123, 1);
+  width: 61px;
+  height: auto;
+  position: absolute;
+  font-size: 10px;
+  font-style: Book;
+  text-align: right;
+  font-family: Circular Std;
+  font-weight: 300;
+  line-height: 10px;
+  font-stretch: normal;
+  text-decoration: none;
+}
+.message-root-class-name {
+  top: 270px;
+  left: 590px;
+  position: absolute;
+}

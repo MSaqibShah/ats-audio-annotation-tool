@@ -1,0 +1,30 @@
+/* CTA Button Styles */
+.button {
+  background-color: #20a090; /* Primary blue */
+  color: white; /* Text color */
+  border: none; /* Removes the default border */
+  padding: 12px 24px; /* Top and bottom padding, Left and right padding */
+  font-size: 16px; /* Text size */
+  font-weight: bold; /* Text weight */
+  cursor: pointer; /* Changes the cursor to a pointer on hover */
+  border-radius: 8px; /* Rounded corners */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition for background color and transform */
+  outline: none; /* Removes the outline */
+  margin: 0 21px;
+  display: flex;
+  justify-content: center;
+}
+
+.button:hover,
+.button:focus {
+  background-color: #20a090; /* Darker shade of blue on hover/focus */
+  transform: scale(1.05); /* Slightly increase the button size */
+  outline: none; /* Ensure outline doesn't reappear on focus */
+}
+
+.button:active {
+  background-color: #20a090; /* Even darker shade of blue on active/click */
+  transform: scale(
+    0.95
+  ); /* Slightly decrease the button size to mimic pressing */
+}
