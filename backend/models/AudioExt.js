@@ -31,7 +31,8 @@ const nlpSchema = new mongoose.Schema({
   intent: {
     type: String,
     required: false,
-    enum: AUDIO_INTENTS,
+    ref: "Intent",
+    // enum: AUDIO_INTENTS,
     default: UNKNOWN,
   },
   best_response: {
