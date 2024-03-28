@@ -7,6 +7,8 @@ const connectDB = require("./db")();
 const intentControllers = require("./controllers/intentControllers");
 const categoriesControllers = require("./controllers/categoriesControllers");
 const audioControllers = require("./controllers/audioControllers");
+const responseControllers = require("./controllers/responseControllers");
+const emotionControllers = require("./controllers/emotionControllers");
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -38,6 +40,27 @@ app
   .post(intentControllers.createIntent)
   .get(intentControllers.getAllIntents);
 
+// RESPONSES
+app
+  .route("/api/audios/categories/responses/:id")
+  .get(responseControllers.getSingleResponse)
+  .patch(responseControllers.updateSingleResponse)
+  .delete(responseControllers.deleteSingleResponse);
+app
+  .route("/api/audios/categories/responses")
+  .post(responseControllers.createResponse)
+  .get(responseControllers.getAllResponses);
+
+// EMOTIONS
+app
+  .route("/api/audios/categories/emotions/:id")
+  .get(emotionControllers.getSingleEmotion)
+  .patch(emotionControllers.updateSingleEmotion)
+  .delete(emotionControllers.deleteSingleEmotion);
+app
+  .route("/api/audios/categories/emotions")
+  .post(emotionControllers.createEmotion)
+  .get(emotionControllers.getAllEmotions);
 // CATEGORIES
 app.route("/api/audios/categories").get(categoriesControllers.getAllCategories);
 

@@ -9,7 +9,6 @@ const intentControllers = {
     }
 
     try {
-      console.log(req.params.id);
       const intent = await IntentModel.findById(req.params.id);
       if (!intent) {
         return res
@@ -54,17 +53,8 @@ const intentControllers = {
       }
       res.status(200).json(intent);
     } catch (error) {
-      if (error.name === "ValidationError") {
-        const messages = Object.values(error.errors).map((val) => {
-          if (val.kind === "enum") {
-            return {
-              message: val.message,
-              accepted_values: val.properties.enumValues,
-            };
-          }
-          return val.message;
-        });
-        return res.status(400).json({ message: messages });
+      if (error.name === "MongoError" && error.code === 11000) {
+        return res.status(400).json({ message: "Intent already exists" });
       }
       console.log(error);
       res.status(500).json({ message: "Server Error" });
@@ -77,12 +67,19 @@ const intentControllers = {
       if (id.length != 24) {
         return res.status(400).json({ message: "invalid id" });
       }
-      const intent = await IntentModel.findByIdAndDelete(req.params.id);
+      let intent = await IntentModel.findOne({ _id: req.params.id });
       if (!intent) {
         return res
           .status(404)
           .json({ message: "intent not found", id: req.params.id });
       }
+
+      if (intent.name === "UNKNOWN-INTENT") {
+        return res
+          .status(400)
+          .json({ message: "Cannot delete 'UNKNOWN-INTENT'" });
+      }
+      intent = await IntentModel.findByIdAndDelete(req.params.id);
       res.status(200).json({ message: "success", intent: intent });
     } catch (error) {
       console.log(error);

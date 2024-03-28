@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
 import "./page.css";
@@ -75,9 +75,25 @@ const Page = (props) => {
 
     if (data.data.audio === null) {
       alert(data.data.message);
+      setBetterResponse("");
+      setSelectedEmotion("");
+      setSelectedGender("");
+      setSelectedIntent("");
+      setSelectedResponse("");
     }
     setAudio(data.data.audio);
     setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+    setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+    setSelectedEmotion(
+      data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+    );
+    setSelectedIntent(
+      data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+    );
+    setSelectedResponse(
+      data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+    );
+
     setMessages(
       data.data.audio
         ? [
@@ -102,11 +118,6 @@ const Page = (props) => {
           ]
         : []
     );
-    setBetterResponse("");
-    setSelectedEmotion("");
-    setSelectedGender("");
-    setSelectedIntent("");
-    setSelectedResponse("");
   };
   const updateMetadata = async () => {
     if (!selectedEmotion) {
@@ -167,11 +178,51 @@ const Page = (props) => {
   const handleResponseChange = (event) => {
     setSelectedResponse(event.target.value);
   };
+
+  const navigate = useHistory();
+
+  const handleNavigateIntent = () => {
+    navigate.push("/intent"); // Specify the path you want to redirect to
+  };
+
+  const handleNavigateEmotion = () => {
+    navigate.push("/emotion"); // Specify the path you want to redirect to
+  };
+
+  const handleNavigateResponse = () => {
+    navigate.push("/response"); // Specify the path you want to redirect to
+  };
+
+  const handleNavigateHome = () => {
+    navigate.push("/"); // Specify the path you want to redirect to
+  };
   return (
     <div className="page-container">
+      <Button
+        className={"f-btn-i"}
+        text={"Intents"}
+        onClick={handleNavigateIntent}
+      />
+      <Button
+        className={"f-btn-e"}
+        text={"Emotions"}
+        onClick={handleNavigateEmotion}
+      />
+      <Button
+        className={"f-btn-r"}
+        text={"Responses"}
+        onClick={handleNavigateResponse}
+      />
+
+      <Button
+        className={"f-btn-h"}
+        text={"Home"}
+        onClick={handleNavigateHome}
+      />
+
       <Helmet>
-        <title>Page - exported project</title>
-        <meta property="og:title" content="Page - exported project" />
+        <title>AAT - Audio Annotation Tool </title>
+        <meta property="og:title" content="AAT - Audio Annotation Tool" />
       </Helmet>
       <div className="page-main">
         <div className="page-left">
@@ -231,8 +282,8 @@ const Page = (props) => {
                   {categories.emotions &&
                     categories.emotions.map((emotion) => {
                       return (
-                        <option key={emotion} value={emotion}>
-                          {emotion}
+                        <option key={emotion.name} value={emotion._id}>
+                          {emotion.name}
                         </option>
                       );
                     })}
@@ -247,7 +298,7 @@ const Page = (props) => {
             </div>
           </div>
         </div>
-        <div className="page-middle">
+        <div className="page-middle-home">
           <span className="page-section-text1">Dialog Flow</span>
           <img
             alt="Line11012"
@@ -282,8 +333,8 @@ const Page = (props) => {
                   {categories.intents &&
                     categories.intents.map((intent) => {
                       return (
-                        <option key={intent} value={intent}>
-                          {intent}
+                        <option key={intent.value} value={intent._id}>
+                          {intent.value}
                         </option>
                       );
                     })}
@@ -302,8 +353,8 @@ const Page = (props) => {
                   {categories.responses &&
                     categories.responses.map((response) => {
                       return (
-                        <option key={response} value={response}>
-                          {response}
+                        <option key={response.text} value={response._id}>
+                          {response.text}
                         </option>
                       );
                     })}
@@ -320,7 +371,11 @@ const Page = (props) => {
                 <span className="page-text11">Suggest Better Response</span>
               </div>
               <div className="next-button">
-                <Button text="Fetch Audio" onClick={handleClick} />
+                <Button
+                  key={"better-response"}
+                  text="Fetch Audio"
+                  onClick={handleClick}
+                />
               </div>
             </div>
           </div>

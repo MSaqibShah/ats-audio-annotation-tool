@@ -1,4 +1,7 @@
 const { Audio: AudioModel } = require("../models/AudioExt");
+const IntentModel = require("../models/Intent");
+const ResponseModel = require("../models/Response");
+const EmotionModel = require("../models/Emotion");
 
 module.exports = {
   getSingleAudio: async (req, res) => {
@@ -8,7 +11,10 @@ module.exports = {
     }
     try {
       // mongoose query to get a audio by id
-      const audio = await AudioModel.findById(req.params.id);
+      const audio = await AudioModel.findById(req.params.id)
+        .populate("nlp.intent")
+        .populate("nlp.best_response")
+        .populate("nlp.emotion");
 
       if (!audio) {
         return res
@@ -24,7 +30,11 @@ module.exports = {
   getAllAudios: async (req, res) => {
     try {
       // mongoose query to get all audios
-      const audios = await AudioModel.find();
+      const audios = await AudioModel.find()
+        .populate("nlp.intent")
+        .populate("nlp.best_response")
+        .populate("nlp.emotion");
+
       res.status(200).json(audios);
     } catch (error) {
       console.log(error);
@@ -51,6 +61,9 @@ module.exports = {
       const audio = await AudioModel.create(audioData);
       res.status(201).json({ message: "success", audio: audio });
     } catch (error) {
+      if (error.name === "MongoError" && error.code === 11000) {
+        return res.status(400).json({ message: "Audio already exists" });
+      }
       if (error.name === "ValidationError") {
         const messages = Object.values(error.errors).map((val) => {
           if (val.kind === "enum") {
@@ -73,23 +86,72 @@ module.exports = {
       return res.status(400).json({ message: "invalid id" });
     }
     try {
-      // mongoose query to update a audio by id
-      const audio = await AudioModel.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-
+      // Construct the update object with paths for nested fields
+      audio = await AudioModel.findById(req.params.id);
       if (!audio) {
         return res
           .status(404)
           .json({ message: "audio not found", id: req.params.id });
       }
-      res.status(200).json(audio);
+      for (const key in req.body) {
+        if (key === "nlp") {
+          for (const nlpKey in req.body[key]) {
+            if (nlpKey === "intent") {
+              const intent = await IntentModel.findById(req.body[key][nlpKey]);
+              if (!intent) {
+                return res
+                  .status(404)
+                  .json({ message: "Intent not found", id: id });
+              }
+              audio.nlp.intent = intent._id;
+            }
+            if (nlpKey === "best_response") {
+              const response = await ResponseModel.findById(
+                req.body[key][nlpKey]
+              );
+              if (!response) {
+                return res
+                  .status(404)
+                  .json({ message: "Response not found", id: id });
+              }
+              audio.nlp.best_response = response._id;
+            }
+            if (nlpKey === "emotion") {
+              const emotion = await EmotionModel.findById(
+                req.body[key][nlpKey]
+              );
+              if (!emotion) {
+                return res
+                  .status(404)
+                  .json({ message: "Emotion not found", id: id });
+              }
+              audio.nlp.emotion = emotion._id;
+            }
+
+            if (nlpKey === "better_response") {
+              audio.nlp.better_response = req.body[key][nlpKey];
+            }
+
+            if (nlpKey === "gender") {
+              audio.nlp.gender = req.body[key][nlpKey];
+            }
+          }
+        } else {
+          audio[key] = req.body[key];
+        }
+      }
+
+      audio.save();
+      await audio.populate("nlp.intent");
+      await audio.populate("nlp.best_response");
+      await audio.populate("nlp.emotion");
+
+      res.status(200).json({ message: "success", audio: audio });
     } catch (error) {
+      if (error.name === "MongoError" && error.code === 11000) {
+        return res.status(400).json({ message: "Audio already exists" });
+      }
+
       if (error.name === "ValidationError") {
         const messages = Object.values(error.errors).map((val) => {
           if (val.kind === "enum") {
@@ -138,6 +200,9 @@ module.exports = {
       // update the status of the audio to processing
       audio.status = "processing";
       await audio.save();
+      await audio.populate("nlp.intent");
+      await audio.populate("nlp.best_response");
+      await audio.populate("nlp.emotion");
       res.status(200).json({ message: "success", audio: audio });
     } catch (error) {
       console.log(error);

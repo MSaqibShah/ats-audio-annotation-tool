@@ -1,0 +1,63 @@
+.table {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 120px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.thread,
+.table-body {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  text-align: left;
+  align-items: center;
+}
+
+.row > span {
+  flex: 1;
+  padding: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Header row styling */
+.thread .row {
+  background-color: #20a090;
+  color: white;
+  font-weight: bold;
+}
+
+/* Zebra striping for table body rows */
+.table-body .row:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.table-body .row:nth-child(even) {
+  background-color: #e9ecef;
+}
+
+.table-body .row:hover {
+  background-color: #ddeeff;
+}
+
+/* Button styling */
+button {
+  padding: 8px 15px;
+  background-color: #dc3545; /* Bootstrap red */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #c82333; /* Darker red */
+}

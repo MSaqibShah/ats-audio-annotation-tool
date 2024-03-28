@@ -1,15 +1,13 @@
 const IntentModel = require("../models/Intent");
-const {
-  AUDIO_EMOTIONS,
-  AUDIO_GENDERS,
-  AUDIO_STATUSES,
-  AUDIO_RESPONSES,
-} = require("../models/AudioExt");
+const ResponseModel = require("../models/Response");
+const EmotionModel = require("../models/Emotion");
+const { AUDIO_GENDERS, AUDIO_STATUSES } = require("../models/AudioExt");
 
 module.exports = {
   getAllCategories: async (req, res) => {
     const AUDIO_INTENTS = await IntentModel.find();
-
+    const AUDIO_RESPONSES = await ResponseModel.find();
+    const AUDIO_EMOTIONS = await EmotionModel.find();
     let category_data = {
       intents: AUDIO_INTENTS,
       emotions: AUDIO_EMOTIONS,

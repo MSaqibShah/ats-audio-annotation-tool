@@ -1,8 +1,13 @@
 const mongoose = require("mongoose");
+const {
+  findOrCreateUnknownIntent,
+  findOrCreateUnknownResponse,
+  findOrCreateUnknownEmotion,
+} = require("../utilities/findOrCreateUtility");
 
 const UNKNOWN = "unknown";
 const AUDIO_STATUS_DEFAULT = "waiting";
-const AUDIO_EMOTIONS = ["happy", "sad", "angry", "neutral", UNKNOWN];
+// const AUDIO_EMOTIONS = ["happy", "sad", "angry", "neutral", UNKNOWN];
 const AUDIO_GENDERS = ["male", "female", UNKNOWN];
 const AUDIO_STATUSES = [
   AUDIO_STATUS_DEFAULT,
@@ -11,16 +16,11 @@ const AUDIO_STATUSES = [
   "missing-information",
 ];
 
-const AUDIO_RESPONSES = ["yes", "no", UNKNOWN];
-
-const AUDIO_INTENTS = ["positive", "negative", "neutral", UNKNOWN];
-
 const nlpSchema = new mongoose.Schema({
   emotion: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: false,
-    enum: AUDIO_EMOTIONS,
-    default: UNKNOWN,
+    ref: "Emotion",
   },
   gender: {
     type: String,
@@ -29,17 +29,14 @@ const nlpSchema = new mongoose.Schema({
     default: UNKNOWN,
   },
   intent: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: false,
     ref: "Intent",
-    // enum: AUDIO_INTENTS,
-    default: UNKNOWN,
   },
   best_response: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: false,
-    enum: AUDIO_RESPONSES,
-    default: UNKNOWN,
+    ref: "Response",
   },
   better_response: {
     type: String,
@@ -59,13 +56,6 @@ const audioSchema = new mongoose.Schema({
   nlp: {
     type: nlpSchema,
     required: false,
-    default: {
-      emotion: UNKNOWN,
-      gender: UNKNOWN,
-      intent: UNKNOWN,
-      best_response: UNKNOWN,
-      better_response: "",
-    },
   },
   level: {
     type: Number,
@@ -95,13 +85,31 @@ const audioSchema = new mongoose.Schema({
   },
 });
 
+audioSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    if (!this.nlp) {
+      this.nlp = {};
+    }
+
+    if (!this.nlp.intent) {
+      this.nlp.intent = await findOrCreateUnknownIntent();
+    }
+
+    if (!this.nlp.best_response) {
+      this.nlp.best_response = await findOrCreateUnknownResponse();
+    }
+
+    if (!this.nlp.emotion) {
+      this.nlp.emotion = await findOrCreateUnknownEmotion();
+    }
+  }
+  next();
+});
+
 const Audio = mongoose.model("Audio", audioSchema);
 
 module.exports = {
   Audio,
-  AUDIO_EMOTIONS,
   AUDIO_GENDERS,
   AUDIO_STATUSES,
-  AUDIO_INTENTS,
-  AUDIO_RESPONSES,
 };
