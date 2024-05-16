@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const config = require("./config");
 const connectDB = require("./db")();
+const path = require('path')
+
+console.log("SERVER IS RUNNING ON: ", config.NODE_ENV)
+
 
 const intentControllers = require("./controllers/intentControllers");
 const categoriesControllers = require("./controllers/categoriesControllers");
@@ -17,6 +21,17 @@ app.use(cors());
 const port = config.BACKEND_PORT;
 
 // Routes
+// Serve static assets if in production
+if(config.NODE_ENV == "prod"){
+  const path_to_index = path.join(__dirname, 'frontend/build', 'index.html')
+  console.log(path_to_index)
+
+  app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+  app.get('/', function (req, res) {
+    res.sendFile(path_to_index);
+  });
+} 
 // API
 app.route("/api").get((req, res) => {
   try {

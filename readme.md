@@ -20,7 +20,8 @@ These instructions will get you a copy of the project up and running on your loc
 - MongoDB (Local installation or cloud-based solution like MongoDB Atlas)
 - Yarn or npm (Package manager)
 
-### Installation
+### Running
+#### Locally
 
 1. Clone the repository to your local machine:
 
@@ -79,6 +80,22 @@ npm start
 
 The React application should now be running on `http://localhost:3000`, and your backend should be on `http://localhost:5000`.
 
+#### With Docker
+1. Export the env variable if running on Lixux based systems
+`export $(grep -v '^#' .env | xargs)`
+
+2. Build the docker image using the following command
+
+`docker build --build-arg BACKEND_URL_PROD="$FRONTEND_PORT_PROD" --build-arg BACKEND_PORT_PROD="$FRONTEND_PORT_PROD" -t ats-audio-annotation-tool .`
+
+3. Run the container using the following command
+
+`docker run -d -p "$BACKEND_PORT_PROD":"$BACKEND_PORT_PROD" -e MONGO_DB_URI_PROD="$MONGO_DB_URI_PROD"  -e BACKEND_PORT_PROD="$BACKEND_PORT_PROD" -e BACKEND_URL_PROD="$BACKEND_URL_PROD"  -e REACT_APP_BACKEND_URL="$"  -e FRONTEND_URL_PROD="$FRONTEND_URL_PROD" ats-audio-annotation-tool`
+
 ## Usage
 
-To begin annotating audio files, navigate to `http://localhost:3000` in your web browser. Here, you can fetch audios, view transcriptions, and annotate each file with the gender of the voice, intent, emotion, and response.
+### Locally
+To begin annotating audio files, navigate to `http://localhost:3000` in your web browser. Here, you can fetch audios, view transcriptions, and annotate each file with the gender of the voice, intent, emotion, and response. 
+
+### Production
+If you are running on a production system the url will be dependent on the environment variables in your .env file.

@@ -20,8 +20,13 @@ const Page = (props) => {
   const [betterResponse, setBetterResponse] = useState("");
   const [currentTranscription, setCurrentTranscription] = useState("");
   const [messages, setMessages] = useState([]);
-  const BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
-
+  let BACKEND_URI = ""
+  if (config.NODE_ENV === "dev" ){
+  BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  }
+  else if( config.NODE_ENV === "prod") {
+   BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  }
   useEffect(() => {
     fetchCategories();
   }, []);

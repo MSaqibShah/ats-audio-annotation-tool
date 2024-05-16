@@ -1,6 +1,9 @@
 const dotenv = require("dotenv");
 
-dotenv.config({ path: "../.env" });
+if (process.env.NODE_ENV === undefined){
+  dotenv.config({ path: "../.env" });
+}
+
 
 const dev_end = {
   MONGO_DB_URI: process.env.MONGO_DB_URI_DEV || "mongodb://localhost/ats_tool",
@@ -19,6 +22,8 @@ const prod_end = {
 };
 const NODE_ENV = process.env.NODE_ENV || "dev";
 
-const config = NODE_ENV === "dev" ? dev_end : prod_end;
+
+let config = NODE_ENV === "dev" ? dev_end : prod_end;
+config.NODE_ENV = NODE_ENV;
 
 module.exports = config;

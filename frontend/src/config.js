@@ -16,5 +16,5 @@ const prod_end = {
 const NODE_ENV = process.env.NODE_ENV || "dev";
 
 const config = NODE_ENV === "dev" ? dev_end : prod_end;
-
+config.NODE_ENV = NODE_ENV;
 module.exports = config;
