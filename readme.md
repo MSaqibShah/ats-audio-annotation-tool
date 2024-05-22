@@ -90,7 +90,7 @@ The React application should now be running on `http://localhost:3000`, and your
 
 3. Run the container using the following command
 
-`docker run -d -p "$BACKEND_PORT_PROD":"$BACKEND_PORT_PROD" -e MONGO_DB_URI_PROD="$MONGO_DB_URI_PROD"  -e BACKEND_PORT_PROD="$BACKEND_PORT_PROD" -e BACKEND_URL_PROD="$BACKEND_URL_PROD"  -e REACT_APP_BACKEND_URL="$"  -e FRONTEND_URL_PROD="$FRONTEND_URL_PROD" ats-audio-annotation-tool`
+`docker run -d  -p "$BACKEND_PORT_PROD":"$BACKEND_PORT_PROD" -e MONGO_DB_URI_PROD="$MONGO_DB_URI_PROD"  -e BACKEND_PORT_PROD="$BACKEND_PORT_PROD" -e BACKEND_URL_PROD="$BACKEND_URL_PROD"  -e REACT_APP_BACKEND_URL="$"  -e FRONTEND_URL_PROD="$FRONTEND_URL_PROD" -e MONGO_DB_PASS_PROD="$MONGO_DB_PASS_PROD" -e MONGO_DB_USER_PROD="$MONGO_DB_USER_PROD" ats-audio-annotation-tool`
 
 ## Usage
 

@@ -15,6 +15,8 @@ const dev_end = {
 
 const prod_end = {
   MONGO_DB_URI: process.env.MONGO_DB_URI_PROD,
+  MONGO_DB_USER: process.env.MONGO_DB_USER_PROD,
+  MONGO_DB_PASS: process.env.MONGO_DB_PASS_PROD,
   BACKEND_PORT: process.env.BACKEND_PORT_PROD,
   FRONTEND_PORT: process.env.FRONTEND_PORT_PROD,
   BACKEND_URL: process.env.BACKEND_URL_PROD,
@@ -25,5 +27,4 @@ const NODE_ENV = process.env.NODE_ENV || "dev";
 
 let config = NODE_ENV === "dev" ? dev_end : prod_end;
 config.NODE_ENV = NODE_ENV;
-
 module.exports = config;

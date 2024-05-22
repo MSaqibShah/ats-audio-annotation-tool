@@ -3,11 +3,19 @@ const config = require("./config"); // Adjust the path as necessary to import yo
 
 // Function to connect to MongoDB
 const connectDB = async () => {
+
+  const config_db = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+
+  if (config.NODE_ENV === "prod") {
+    config_db.authSource = "admin";
+    config_db.user = process.env.MONGO_DB_USER_PROD;
+    config_db.pass = process.env.MONGO_DB_PASS_PROD;
+  }
   try {
-    await mongoose.connect(config.MONGO_DB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(config.MONGO_DB_URI, config_db);
     console.log("Connected to MongoDB At:", config.MONGO_DB_URI);
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
