@@ -42,6 +42,18 @@ const nlpSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  entities: {
+    type: [
+      {
+        entity: String,
+        text: String,
+        label: String,
+      },
+    ],
+
+    required: false,
+    default: [],
+  },
 });
 
 const audioSchema = new mongoose.Schema({

@@ -81,7 +81,7 @@
   flex-direction: column;
 }
 .page-text {
-  top: 165px;
+  top: 155px;
   left: 37px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -98,7 +98,7 @@
   color: #384048;
   width: 262px;
   height: 147px;
-  margin-top: 62px;
+  margin-top: 52px;
   font-family: "Roboto";
   line-height: 23px;
   margin-left: 21px;
@@ -117,7 +117,7 @@
   flex-direction: column;
 }
 .page-text03 {
-  top: 385px;
+  top: 358px;
   left: 37px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -133,7 +133,7 @@
   color: #384048;
   width: 262px;
   background: none;
-  margin-top: 72px;
+  margin-top: 52px; /*here*/
   line-height: 1.5;
   margin-left: 21px;
   padding-top: 15px;
@@ -156,7 +156,7 @@
   color: #384048;
   width: 262px;
   background: none;
-  margin-top: 72px;
+  margin-top: 52px; /*here*/
   line-height: 1.5;
   margin-left: 21px;
   padding-top: 15px;
@@ -172,7 +172,20 @@
   color: #384048;
 }
 .page-text05 {
-  top: 510px;
+  top: 462px;
+  left: 37px;
+  color: var(--dl-color-text-helper);
+  height: auto;
+  padding: 0 4px;
+  position: absolute;
+  font-size: 12px;
+  background: #faf3f3;
+  text-align: left;
+  line-height: 12px;
+  background-image: initial;
+}
+.page-text06 {
+  top: 567px;
   left: 37px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -288,7 +301,7 @@
   flex-direction: column;
 }
 .page-text07 {
-  top: 177px;
+  top: 157px;
   left: 37px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -304,7 +317,7 @@
   color: #384048;
   width: 262px;
   background: none;
-  margin-top: 72px;
+  margin-top: 52px; /*here*/
   line-height: 1.5;
   margin-left: 21px;
   padding-top: 15px;
@@ -321,7 +334,7 @@
   flex-direction: column;
 }
 .page-text09 {
-  top: 301px;
+  top: 264px;
   left: 37px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -337,7 +350,7 @@
   color: #384048;
   width: 262px;
   background: none;
-  margin-top: 72px;
+  margin-top: 52px; /*here*/
   line-height: 1.5;
   margin-left: 21px;
   padding-top: 15px;
@@ -372,7 +385,7 @@
   background-color: transparent;
 }
 .page-text11 {
-  top: 414px;
+  top: 380px;
   left: 32px;
   color: var(--dl-color-text-helper);
   height: auto;
@@ -387,7 +400,7 @@
 
 .next-button {
   display: flex;
-  height: 150px;
+  height: 99px;
   flex-direction: column;
   justify-content: end;
 }

@@ -135,6 +135,9 @@ module.exports = {
             if (nlpKey === "gender") {
               audio.nlp.gender = req.body[key][nlpKey];
             }
+            if (nlpKey === "entities") {
+              audio.nlp.entities = req.body[key][nlpKey];
+            }
           }
         } else {
           audio[key] = req.body[key];

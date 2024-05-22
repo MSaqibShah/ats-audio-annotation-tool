@@ -19,13 +19,13 @@ const Page = (props) => {
   const [selectedResponse, setSelectedResponse] = useState("");
   const [betterResponse, setBetterResponse] = useState("");
   const [currentTranscription, setCurrentTranscription] = useState("");
+  const [entities, setEntities] = useState("");
   const [messages, setMessages] = useState([]);
-  let BACKEND_URI = ""
-  if (config.NODE_ENV === "dev" ){
-  BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
-  }
-  else if( config.NODE_ENV === "prod") {
-   BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  let BACKEND_URI = "";
+  if (config.NODE_ENV === "dev") {
+    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  } else if (config.NODE_ENV === "prod") {
+    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
   }
   useEffect(() => {
     fetchCategories();
@@ -44,8 +44,26 @@ const Page = (props) => {
         if (data.status == 200 && data.data.audio === null) {
           alert(data.data.message);
         }
+        console.log(data.data);
         setAudio(data.data.audio);
-        audio && setCurrentTranscription(data.data.audio.text);
+        console.log(audio);
+        data.data.audio && setCurrentTranscription(data.data.audio.text);
+        if (data.data.audio !== null) {
+          let ent = data.data.audio.nlp.entities;
+          let ent_str = "";
+          for (let i = 0; i < ent.length; i++) {
+            ent_str += ent[i].entity + " : " + ent[i].text + ";";
+          }
+
+          setEntities(ent_str);
+          console.log("ENTITIES:", entities);
+        }
+        data.data.audio && setSelectedGender(data.data.audio.nlp.gender);
+        data.data.audio && setSelectedEmotion(data.data.audio.nlp.emotion._id);
+        data.data.audio && setSelectedIntent(data.data.audio.nlp.intent._id);
+        data.data.audio &&
+          setSelectedResponse(data.data.audio.nlp.best_response._id);
+
         setMessages(
           data.data.audio
             ? [
@@ -88,6 +106,18 @@ const Page = (props) => {
     }
     setAudio(data.data.audio);
     setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+    if (data.data.audio !== null) {
+      let ent = data.data.audio.nlp.entities;
+      let ent_str = "";
+      for (let i = 0; i < ent.length; i++) {
+        ent_str += ent[i].entity + " : " + ent[i].text + ";";
+      }
+
+      setEntities(ent_str);
+      console.log("ENTITIES:", entities);
+    } else {
+      setEntities("");
+    }
     setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
     setSelectedEmotion(
       data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
@@ -141,6 +171,16 @@ const Page = (props) => {
       alert("Please select an response");
     }
 
+    let ents = entities.split(";");
+    let entitiesArr = [];
+    for (let i = 0; i < ents.length - 1; i++) {
+      let ent = ents[i].split(":");
+      entitiesArr.push({
+        entity: ent[0].trim(),
+        text: ent[1].trim(),
+        label: "updated_entity",
+      });
+    }
     const payload = {
       nlp: {
         emotion: selectedEmotion,
@@ -148,6 +188,7 @@ const Page = (props) => {
         intent: selectedIntent,
         best_response: selectedResponse,
         better_response: betterResponse,
+        entities: entitiesArr,
       },
       status: "completed",
     };
@@ -254,6 +295,7 @@ const Page = (props) => {
                   {currentTranscription}
                 </textarea>
               </div>
+
               <div className="page-gender">
                 <span className="page-text03">
                   <span>Gender</span>
@@ -296,6 +338,25 @@ const Page = (props) => {
                 <span className="page-text05">
                   <span>Emotions</span>
                 </span>
+              </div>
+
+              <div className="page-current-transcription">
+                <span className="page-text06">
+                  <span>Entities</span>
+                  <br></br>
+                </span>
+
+                <textarea
+                  cols="1"
+                  placeholder="Input Field"
+                  legend="wash"
+                  className="page-textarea textarea"
+                  id="entities"
+                  value={entities}
+                  onChange={(e) => setEntities(e.target.value)}
+                >
+                  {entities}
+                </textarea>
               </div>
               <div className="next-button">
                 <Button text="Update Metadata" onClick={updateMetadata} />
