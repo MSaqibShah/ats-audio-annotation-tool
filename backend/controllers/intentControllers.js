@@ -112,6 +112,22 @@ const intentControllers = {
       }
     }
   },
+  getSingleIntentByName: async (req, res) => {
+    try {
+      const intent = await IntentModel.findOne({
+        name: req.params.intent_name,
+      });
+      if (!intent) {
+        return res
+          .status(404)
+          .json({ message: "intent not found", name: req.params.intent_name });
+      }
+      res.status(200).json({ message: "success", intent: intent });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server Error" });
+    }
+  },
 };
 
 module.exports = intentControllers;
