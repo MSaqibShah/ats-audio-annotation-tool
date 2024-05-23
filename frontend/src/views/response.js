@@ -11,6 +11,13 @@ import config from "../config";
 
 import axios from "axios";
 
+let BACKEND_URI = "";
+  if (config.NODE_ENV === "dev") {
+    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  } else if (config.NODE_ENV === "prod") {
+    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  }
+
 const Responses = (props) => {
   // State to store responses data
   const [responses, setResponses] = useState([]);
@@ -21,7 +28,7 @@ const Responses = (props) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/responses`, // Update the URL as per your API endpoint
+        `${BACKEND_URI}/api/audios/categories/responses`, // Update the URL as per your API endpoint
         {
           text: newResponsesName,
         }
@@ -43,7 +50,7 @@ const Responses = (props) => {
   const fetchResponses = async () => {
     try {
       const response = await axios.get(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/responses`
+        `${BACKEND_URI}/api/audios/categories/responses`
       ); // Update the URL path as per your API endpoint
       if (response.data && response.data.responses) {
         setResponses(response.data.responses);

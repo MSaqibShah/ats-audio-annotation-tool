@@ -7,9 +7,17 @@ import "./intent.css";
 import ChatApp from "../components/ChatApp";
 import Button from "../components/Button";
 import IntentsTable from "../components/intentsTable";
-import config from "../config";
 
 import axios from "axios";
+
+import config from "../config";
+
+let BACKEND_URI = "";
+  if (config.NODE_ENV === "dev") {
+    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  } else if (config.NODE_ENV === "prod") {
+    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  }
 
 const Intent = (props) => {
   // State to store intents data
@@ -22,7 +30,7 @@ const Intent = (props) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/intents`, // Update the URL as per your API endpoint
+        `${BACKEND_URI}/api/audios/categories/intents`, // Update the URL as per your API endpoint
         {
           name: newIntentName,
           value: newIntentValue,
@@ -46,7 +54,7 @@ const Intent = (props) => {
   const fetchIntents = async () => {
     try {
       const response = await axios.get(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/intents`
+        `${BACKEND_URI}/api/audios/categories/intents`
       ); // Update the URL path as per your API endpoint
       if (response.data && response.data.intents) {
         setIntents(response.data.intents);
