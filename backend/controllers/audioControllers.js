@@ -2,7 +2,19 @@ const { Audio: AudioModel } = require("../models/AudioExt");
 const IntentModel = require("../models/Intent");
 const ResponseModel = require("../models/Response");
 const EmotionModel = require("../models/Emotion");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
+
+function convertStringToObjectId(input) {
+  if (typeof input === 'string' && ObjectId.isValid(input)) {
+      return new ObjectId(input);
+  } else if (typeof input instanceof ObjectId){
+      return input; 
+  } else{
+      return null;
+  }
+}
 module.exports = {
   getSingleAudio: async (req, res) => {
     const id = req.params.id;
@@ -57,7 +69,11 @@ module.exports = {
           .status(400)
           .json({ message: "Text Transcription is required" });
       }
+      if (audioData.nlp && audioData.nlp.intent) {
 
+        intent = convertStringToObjectId(audioData.nlp.intent)
+        audioData.nlp.intent = intent;
+      }
       const audio = await AudioModel.create(audioData);
       res.status(201).json({ message: "success", audio: audio });
     } catch (error) {

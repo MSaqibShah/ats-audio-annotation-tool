@@ -11,6 +11,13 @@ import config from "../config";
 
 import axios from "axios";
 
+let BACKEND_URI = "";
+  if (config.NODE_ENV === "dev") {
+    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  } else if (config.NODE_ENV === "prod") {
+    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  }
+
 const Emotions = (props) => {
   // State to store emotions data
   const [emotions, setEmotions] = useState([]);
@@ -21,7 +28,7 @@ const Emotions = (props) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/emotions`, // Update the URL as per your API endpoint
+        `${BACKEND_URI}/api/audios/categories/emotions`, // Update the URL as per your API endpoint
         {
           name: newEmotionsName,
         }
@@ -43,7 +50,7 @@ const Emotions = (props) => {
   const fetchEmotions = async () => {
     try {
       const response = await axios.get(
-        `${config.BACKEND_URL}:${config.BACKEND_PORT}/api/audios/categories/emotions`
+        `${BACKEND_URI}/api/audios/categories/emotions`
       ); // Update the URL path as per your API endpoint
       if (response.data && response.data.emotions) {
         setEmotions(response.data.emotions);

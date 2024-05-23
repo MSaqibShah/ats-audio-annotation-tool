@@ -2,7 +2,19 @@ import { React, useState, useEffect } from "react";
 import "./emotionsTable.css";
 import axios from "axios";
 
+
 import config from "../config";
+
+
+let BACKEND_URI = "";
+
+if (config.NODE_ENV === "dev") {
+  BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+}
+else if (config.NODE_ENV === "prod") {
+  BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+}
+
 
 // Mock delete function
 
@@ -18,7 +30,7 @@ const EmotionsTable = ({ emotions, fetchEmotions }) => {
     try {
       // Update the URL path as per your API endpoint
       const data = await axios.delete(
-        `http://localhost:5000/api/audios/categories/emotions/${emotionsId}`
+        `${BACKEND_URI}/api/audios/categories/emotions/${emotionsId}`
       );
 
       if (data.status === 200) {
