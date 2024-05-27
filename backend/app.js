@@ -95,7 +95,7 @@ app
   .delete(audioControllers.deleteSingleAudio);
 
 app.get("/api/audios/random/waiting", audioControllers.getRandomWaitingAudio);
-
+app.get("/api/audios/index/:index", audioControllers.getSingleByIndex);
 // 404 Route
 app.route("*").get((req, res) => {
   res.status(404).json({ message: "Resource Not Found" });

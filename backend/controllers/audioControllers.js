@@ -5,14 +5,13 @@ const EmotionModel = require("../models/Emotion");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
-
 function convertStringToObjectId(input) {
-  if (typeof input === 'string' && ObjectId.isValid(input)) {
-      return new ObjectId(input);
-  } else if (typeof input instanceof ObjectId){
-      return input; 
-  } else{
-      return null;
+  if (typeof input === "string" && ObjectId.isValid(input)) {
+    return new ObjectId(input);
+  } else if (typeof input instanceof ObjectId) {
+    return input;
+  } else {
+    return null;
   }
 }
 module.exports = {
@@ -24,6 +23,31 @@ module.exports = {
     try {
       // mongoose query to get a audio by id
       const audio = await AudioModel.findById(req.params.id)
+        .populate("nlp.intent")
+        .populate("nlp.best_response")
+        .populate("nlp.emotion");
+
+      if (!audio) {
+        return res
+          .status(404)
+          .json({ message: "audio not found", id: req.params.id });
+      }
+      res.status(200).json({ message: "success", audio: audio });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server Error" });
+    }
+  },
+  getSingleByIndex: async (req, res) => {
+    let index = req.params.index;
+    index = parseInt(index);
+    if (isNaN(index)) {
+      res.status(500).json({ message: "Index should be an integer" });
+    }
+
+    try {
+      // mongoose query to get a audio by id
+      const audio = await AudioModel.findOne({ index: index })
         .populate("nlp.intent")
         .populate("nlp.best_response")
         .populate("nlp.emotion");
@@ -70,8 +94,7 @@ module.exports = {
           .json({ message: "Text Transcription is required" });
       }
       if (audioData.nlp && audioData.nlp.intent) {
-
-        intent = convertStringToObjectId(audioData.nlp.intent)
+        intent = convertStringToObjectId(audioData.nlp.intent);
         audioData.nlp.intent = intent;
       }
       const audio = await AudioModel.create(audioData);

@@ -57,6 +57,10 @@ const nlpSchema = new mongoose.Schema({
 });
 
 const audioSchema = new mongoose.Schema({
+  index: {
+    type: Number,
+    required: false,
+  },
   audio: {
     type: String,
     required: true,
@@ -98,6 +102,9 @@ const audioSchema = new mongoose.Schema({
 });
 
 audioSchema.pre("save", async function (next) {
+  if (this.index === undefined) {
+    this.index = await Audio.countDocuments();
+  }
   if (this.isNew) {
     if (!this.nlp) {
       this.nlp = {};

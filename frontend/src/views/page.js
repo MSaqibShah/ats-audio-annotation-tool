@@ -39,12 +39,17 @@ const Page = (props) => {
 
       if (!audio) {
         const data = await axios.get(
-          `${BACKEND_URI}/api/audios/random/waiting`
+          // `${BACKEND_URI}/api/audios/random/waiting`
+          `${BACKEND_URI}/api/audios/index/0`
         );
+        if (data.status == 404 && data.data.audio === null) {
+          console.log("No more audios to annotate");
+          alert("No audios to annotate");
+          return;
+        }
         if (data.status == 200 && data.data.audio === null) {
           alert(data.data.message);
         }
-        console.log(data.data);
         setAudio(data.data.audio);
         console.log(audio);
         data.data.audio && setCurrentTranscription(data.data.audio.text);
@@ -153,6 +158,162 @@ const Page = (props) => {
           ]
         : []
     );
+  };
+
+  const nextAudio = async () => {
+    // Get current audio index
+    let index = audio.index;
+    // Get next audio
+    try {
+      const data = await axios.get(
+        `${BACKEND_URI}/api/audios/index/${index + 1}`
+      );
+
+      // const data = await axios.get(`${BACKEND_URI}/api/audios/random/waiting`);
+
+      // if (data.data.audio === null) {
+      //   alert(data.data.message);
+      //   setBetterResponse("");
+      //   setSelectedEmotion("");
+      //   setSelectedGender("");
+      //   setSelectedIntent("");
+      //   setSelectedResponse("");
+      // }
+      setAudio(data.data.audio);
+      setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+      if (data.data.audio !== null) {
+        let ent = data.data.audio.nlp.entities;
+        let ent_str = "";
+        for (let i = 0; i < ent.length; i++) {
+          ent_str += ent[i].entity + " : " + ent[i].text + ";";
+        }
+
+        setEntities(ent_str);
+        console.log("ENTITIES:", entities);
+      } else {
+        setEntities("");
+      }
+      setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+      setSelectedEmotion(
+        data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+      );
+      setSelectedIntent(
+        data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+      );
+      setSelectedResponse(
+        data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+      );
+
+      setMessages(
+        data.data.audio
+          ? [
+              {
+                id: 0,
+                author: "System",
+                type: "recieved",
+                content: "Voice message",
+                src: "data:audio/wav;base64," + data.data.audio.audio,
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+              {
+                id: 1,
+                author: "System",
+                type: "recieved",
+                content: "Transcription: " + data.data.audio.text,
+                src: "",
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+            ]
+          : []
+      );
+    } catch (error) {
+      if (error.response.status === 404) {
+        alert("No more audios to annotate");
+        return;
+      }
+    }
+  };
+  const previousAudio = async () => {
+    // Get current audio index
+    let index = audio.index;
+
+    if (index - 1 < 0) {
+      alert("Cannot go back further than the first audio");
+      return;
+    }
+    // Get previous audio
+    try {
+      const data = await axios.get(
+        `${BACKEND_URI}/api/audios/index/${index - 1}`
+      );
+
+      // const data = await axios.get(`${BACKEND_URI}/api/audios/random/waiting`);
+
+      // if (data.data.audio === null) {
+      //   alert(data.data.message);
+      //   setBetterResponse("");
+      //   setSelectedEmotion("");
+      //   setSelectedGender("");
+      //   setSelectedIntent("");
+      //   setSelectedResponse("");
+      // }
+      setAudio(data.data.audio);
+      setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+      if (data.data.audio !== null) {
+        let ent = data.data.audio.nlp.entities;
+        let ent_str = "";
+        for (let i = 0; i < ent.length; i++) {
+          ent_str += ent[i].entity + " : " + ent[i].text + ";";
+        }
+
+        setEntities(ent_str);
+        console.log("ENTITIES:", entities);
+      } else {
+        setEntities("");
+      }
+      setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+      setSelectedEmotion(
+        data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+      );
+      setSelectedIntent(
+        data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+      );
+      setSelectedResponse(
+        data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+      );
+
+      setMessages(
+        data.data.audio
+          ? [
+              {
+                id: 0,
+                author: "System",
+                type: "recieved",
+                content: "Voice message",
+                src: "data:audio/wav;base64," + data.data.audio.audio,
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+              {
+                id: 1,
+                author: "System",
+                type: "recieved",
+                content: "Transcription: " + data.data.audio.text,
+                src: "",
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+            ]
+          : []
+      );
+    } catch (error) {
+      if (error.response.status === 404) {
+        alert("No more audios to annotate");
+        return;
+      }
+    }
   };
   const updateMetadata = async () => {
     if (!selectedEmotion) {
@@ -280,7 +441,7 @@ const Page = (props) => {
           />
           <div className="page-main-content">
             <div className="page-container1">
-              <div className="page-current-transcription">
+              {/* {<div className="page-current-transcription">
                 <span className="page-text">
                   <span className="page-text01">Current Transcription</span>
                   <br></br>
@@ -294,6 +455,30 @@ const Page = (props) => {
                 >
                   {currentTranscription}
                 </textarea>
+              </div>} */}
+
+              <div className="current-audio-index">
+                Current Audio Index:{" "}
+                {audio ? (audio.index ? audio.index : 0) : "null"}
+              </div>
+              <div className="next-button">
+                <Button
+                  key={"better-response"}
+                  text="Previous Audio"
+                  onClick={previousAudio}
+                />
+              </div>
+
+              <div className="next-button">
+                <Button
+                  key={"better-response"}
+                  text="Next Audio"
+                  onClick={nextAudio}
+                />
+              </div>
+
+              <div className="next-button">
+                <Button text="Update Metadata" onClick={updateMetadata} />
               </div>
 
               <div className="page-gender">
@@ -358,9 +543,9 @@ const Page = (props) => {
                   {entities}
                 </textarea>
               </div>
-              <div className="next-button">
+              {/* <div className="next-button">
                 <Button text="Update Metadata" onClick={updateMetadata} />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -436,13 +621,13 @@ const Page = (props) => {
                 ></textarea>
                 <span className="page-text11">Suggest Better Response</span>
               </div>
-              <div className="next-button">
+              {/* <div className="next-button">
                 <Button
                   key={"better-response"}
                   text="Fetch Audio"
                   onClick={handleClick}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
