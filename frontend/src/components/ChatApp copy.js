@@ -86,7 +86,7 @@ const ChatInput = ({ onSend }) => {
   );
 };
 
-const ChatApp = ({ initialMessages, audioIndex, messageSetter }) => {
+const ChatApp = ({ initialMessages }) => {
   const [messages, setMessages] = useState(initialMessages);
   const BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
 
@@ -94,58 +94,42 @@ const ChatApp = ({ initialMessages, audioIndex, messageSetter }) => {
     // This effect will run whenever `initialMessages` changes
     setMessages(initialMessages || []);
   }, [initialMessages]);
-  function findObjectById(objectsArray, key, value) {
-    const index = objectsArray.findIndex((obj) => obj[key] === value);
-    if (index !== -1) {
-      return { object: objectsArray[index], index: index };
-    } else {
-      return null; // or handle the case where the object is not found
-    }
-  }
-  const handleSendMessage = async (newMessageContent) => {
-    let audioToChangeObj = findObjectById(
-      initialMessages,
-      "id",
-      `t_${audioIndex}`
-    );
 
-    let audioToChange = audioToChangeObj.object;
-    let dbId = audioToChange.audio_id;
-    let index = audioToChangeObj.index;
+  const handleSendMessage = (newMessageContent) => {
     if (newMessageContent === "") {
       return;
     }
     // save the transcript using a patch request
 
-    let response = await axios.patch(
-      `${BACKEND_URI}/api/audios/${audioToChange.audio_id}`,
+    const data = axios.patch(
+      `${BACKEND_URI}/api/audios/${messages[0].audio_id}`,
       { text: newMessageContent }
     );
 
-    if (response.status !== 200) {
-      alert("Error Updating Transcript");
-      return;
-    }
-    // change content of the message in the frontend
-    audioToChange["content"] = `Transcription: ${newMessageContent}`;
+    data
+      .then((response) => {
+        let newMessage = {
+          id: messages ? messages.length + 1 : 3,
+          author: "You",
+          type: "sent",
+          content: "Final Transcript: " + newMessageContent,
+          src: "",
+          timestamp: new Date().toTimeString().slice(0, 5),
+        };
 
-    let updatedMessages = [...messages];
-    updatedMessages[index] = audioToChange;
-
-    // find the audio in conversations in local storage and update it
-    let conversation = JSON.parse(localStorage.getItem("conversation"));
-
-    let localAudioObject = findObjectById(conversation.audios, "_id", dbId);
-    let localAudio = localAudioObject.object;
-    let localIndex = localAudioObject.index;
-
-    localAudio.text = newMessageContent;
-
-    conversation.audios[localIndex] = localAudio;
-
-    localStorage.setItem("conversation", JSON.stringify(conversation));
-    setMessages(updatedMessages);
-    messageSetter(updatedMessages);
+        const messageResponse = {
+          id: messages ? messages.length + 1 : 4,
+          author: "System",
+          type: "recieved",
+          content: "Transcript Updated Succesfully!",
+          src: "",
+          timestamp: new Date().toTimeString().slice(0, 5),
+        };
+        setMessages([...messages, newMessage, messageResponse]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (

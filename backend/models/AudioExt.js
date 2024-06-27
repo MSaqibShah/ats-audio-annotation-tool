@@ -6,15 +6,10 @@ const {
 } = require("../utilities/findOrCreateUtility");
 
 const UNKNOWN = "unknown";
-const AUDIO_STATUS_DEFAULT = "waiting";
+const AUDIO_STATUS_DEFAULT = "pending";
 // const AUDIO_EMOTIONS = ["happy", "sad", "angry", "neutral", UNKNOWN];
 const AUDIO_GENDERS = ["male", "female", UNKNOWN];
-const AUDIO_STATUSES = [
-  AUDIO_STATUS_DEFAULT,
-  "processing",
-  "completed",
-  "missing-information",
-];
+const AUDIO_STATUSES = [AUDIO_STATUS_DEFAULT, "completed"];
 
 const nlpSchema = new mongoose.Schema({
   emotion: {
@@ -98,6 +93,14 @@ const audioSchema = new mongoose.Schema({
     required: true,
     default: AUDIO_STATUS_DEFAULT,
     enum: AUDIO_STATUSES,
+  },
+  author: {
+    type: String,
+    required: false,
+  },
+  type: {
+    type: String,
+    required: false,
   },
 });
 

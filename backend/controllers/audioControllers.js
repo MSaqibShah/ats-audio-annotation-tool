@@ -2,6 +2,7 @@ const { Audio: AudioModel } = require("../models/AudioExt");
 const IntentModel = require("../models/Intent");
 const ResponseModel = require("../models/Response");
 const EmotionModel = require("../models/Emotion");
+const { Call: CallModel, CALL_STATUSES } = require("../models/Call");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -188,6 +189,17 @@ module.exports = {
       await audio.populate("nlp.best_response");
       await audio.populate("nlp.emotion");
 
+      // update the call if all audios have completed
+      let audios = await AudioModel.find({ call_id: audio.call_id });
+      let allAudiosCompleted = audios.every((audio) => {
+        return audio.status === "completed";
+      });
+      if (allAudiosCompleted) {
+        let call = await CallModel.findOne({ call_id: audio.call_id });
+        call.status = "completed";
+        call.save();
+      }
+
       res.status(200).json({ message: "success", audio: audio });
     } catch (error) {
       if (error.name === "MongoError" && error.code === 11000) {
@@ -232,7 +244,7 @@ module.exports = {
   },
   getRandomWaitingAudio: async (req, res) => {
     try {
-      const audio = await AudioModel.findOne({ status: "waiting" });
+      const audio = await AudioModel.findOne({ status: "pending" });
       if (!audio) {
         return res
           .status(200)

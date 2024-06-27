@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import { Tooltip } from "react-tooltip";
 
 import "./page.css";
 import ChatApp from "../components/ChatApp";
@@ -22,9 +21,6 @@ const Page = (props) => {
   const [currentTranscription, setCurrentTranscription] = useState("");
   const [entities, setEntities] = useState("");
   const [messages, setMessages] = useState([]);
-  const [conversation, setConversation] = useState({});
-  const [audioIndex, setAudioIndex] = useState(0);
-  const [conversationIndex, setConversationIndex] = useState(0);
   let BACKEND_URI = "";
   if (config.NODE_ENV === "dev") {
     BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
@@ -32,216 +28,291 @@ const Page = (props) => {
     BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
   }
   useEffect(() => {
-    clearLocalStrorage();
-    setInLocalStorage("audioIndex", 0);
-    setInLocalStorage("conversationIndex", 0);
-    fetchConversation();
     fetchCategories();
   }, []);
 
-  const displayAudio = () => {
-    setAudioMeta();
-    displayMessages();
-  };
-
-  const displayMessages = () => {
-    let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
-    let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-    let audio = local_conversation.audios[local_audio_index];
-
-    let newMessages = [];
-    for (let i = 0; i <= local_audio_index; i++) {
-      newMessages.push({
-        // id: local_conversation.audios.length + 1,
-        id: `v_${i}`,
-        author: "System",
-        type: "recieved",
-        content: "Voice message",
-        src: "data:audio/wav;base64," + local_conversation.audios[i].audio,
-        db_id: `v_${local_conversation.audios[i]._id}`,
-        audio_id: audio._id,
-        timestamp: new Date().toTimeString().slice(0, 5),
-      });
-      newMessages.push({
-        // id: local_conversation.audios.length + 2,
-        id: `t_${i}`,
-        author: "System", // Get from the backend
-        type: "recieved", // Get from the backend
-        content: "Transcription: " + local_conversation.audios[i].text,
-        src: "",
-        db_id: `t_${local_conversation.audios[i]._id}`,
-        audio_id: audio._id,
-        timestamp: new Date().toTimeString().slice(0, 5),
-      });
-    }
-
-    // let messages = [
-    //   {
-    //     id: messages.length + 1,
-    //     author: "System",
-    //     type: "recieved",
-    //     content: "Voice message",
-    //     src: "data:audio/wav;base64," + audio.audio,
-    //     audio_id: audio._id,
-    //     timestamp: new Date().toTimeString().slice(0, 5),
-    //   },
-    //   {
-    //     id: messages.length + 2,
-    //     author: "System",
-    //     type: "recieved",
-    //     content: "Transcription: " + audio.text,
-    //     src: "",
-    //     audio_id: audio._id,
-    //     timestamp: new Date().toTimeString().slice(0, 5),
-    //   },
-    // ];
-    // setMessages((currentMessages) => [...currentMessages, ...newMessages]);
-    setMessages(newMessages);
-  };
-
-  const setInLocalStorage = (key, value) => {
-    localStorage.setItem(key, value);
-  };
-
-  const getFromLocalStorage = (key) => {
-    return localStorage.getItem(key);
-  };
-
-  const clearLocalStrorage = () => {
-    localStorage.clear();
-  };
-
-  const setAudioMeta = () => {
-    let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
-    let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-    let local_audio = local_conversation.audios[local_audio_index];
-
-    setCurrentTranscription(local_audio.text);
-    setSelectedEmotion(local_audio.nlp.emotion._id);
-    setSelectedGender(local_audio.nlp.gender);
-    setSelectedIntent(local_audio.nlp.intent._id);
-    setSelectedResponse(local_audio.nlp.best_response._id);
-    let ent = local_audio.nlp.entities;
-    let ent_str = "";
-    for (let i = 0; i < ent.length; i++) {
-      ent_str += ent[i].entity + " : " + ent[i].text + ";";
-    }
-    setEntities(ent_str);
-  };
-
-  const fetchConversation = async () => {
-    try {
-      let local_conversation_index = parseInt(
-        getFromLocalStorage("conversationIndex")
-      );
-      const response = await fetch(
-        `${BACKEND_URI}/api/calls/index/${local_conversation_index}`
-      );
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          alert("No more conversations to annotate");
-          // retain the last conversation index
-          setInLocalStorage("conversationIndex", local_conversation_index - 1);
-          setConversationIndex(local_conversation_index - 1);
-
-          return;
-        } else {
-          throw new Error(
-            "Failed to fetch conversation: " + response.statusText
-          );
-        }
-      }
-
-      const data = await response.json();
-
-      //  save conversation in local storage
-      setInLocalStorage("conversation", JSON.stringify(data.data));
-
-      setConversation(data.data);
-
-      setInLocalStorage("audioIndex", 0);
-      setAudioIndex(0);
-
-      if (data.data.audios.length == 0) {
-        alert("No more convercations to annotate");
-        return;
-      }
-      displayAudio();
-    } catch (error) {
-      console.error("Failed to fetch conversation:", error);
-    }
-  };
-
-  const nextConversation = async () => {
-    try {
-      let local_conversation_index = parseInt(
-        getFromLocalStorage("conversationIndex")
-      );
-      setConversationIndex(local_conversation_index + 1);
-      setInLocalStorage("conversationIndex", local_conversation_index + 1);
-      fetchConversation();
-    } catch (error) {
-      console.log(error);
-      return;
-    }
-  };
   const fetchCategories = async () => {
     try {
       const response = await fetch(`${BACKEND_URI}/api/audios/categories`);
       const data = await response.json();
       setCategories(data.data);
+
+      if (!audio) {
+        const data = await axios.get(
+          // `${BACKEND_URI}/api/audios/random/waiting`
+          `${BACKEND_URI}/api/audios/index/0`
+        );
+        if (data.status == 404 && data.data.audio === null) {
+          console.log("No more audios to annotate");
+          alert("No audios to annotate");
+          return;
+        }
+        if (data.status == 200 && data.data.audio === null) {
+          alert(data.data.message);
+        }
+        setAudio(data.data.audio);
+        console.log(audio);
+        data.data.audio && setCurrentTranscription(data.data.audio.text);
+        if (data.data.audio !== null) {
+          let ent = data.data.audio.nlp.entities;
+          let ent_str = "";
+          for (let i = 0; i < ent.length; i++) {
+            ent_str += ent[i].entity + " : " + ent[i].text + ";";
+          }
+
+          setEntities(ent_str);
+          console.log("ENTITIES:", entities);
+        }
+        data.data.audio && setSelectedGender(data.data.audio.nlp.gender);
+        data.data.audio && setSelectedEmotion(data.data.audio.nlp.emotion._id);
+        data.data.audio && setSelectedIntent(data.data.audio.nlp.intent._id);
+        data.data.audio &&
+          setSelectedResponse(data.data.audio.nlp.best_response._id);
+
+        setMessages(
+          data.data.audio
+            ? [
+                {
+                  id: 0,
+                  author: "System",
+                  type: "recieved",
+                  content: "Voice message",
+                  src: "data:audio/wav;base64," + data.data.audio.audio,
+                  audio_id: data.data.audio._id,
+                  timestamp: new Date().toTimeString().slice(0, 5),
+                },
+                {
+                  id: 1,
+                  author: "System",
+                  type: "recieved",
+                  content: "Transcription: " + data.data.audio.text,
+                  src: "",
+                  audio_id: data.data.audio._id,
+                  timestamp: new Date().toTimeString().slice(0, 5),
+                },
+              ]
+            : []
+        );
+      }
     } catch (error) {
       console.error("Failed to fetch options:", error);
     }
   };
+  const handleClick = async () => {
+    const data = await axios.get(`${BACKEND_URI}/api/audios/random/waiting`);
 
-  const getCurrentAudioIndex = () => {
-    return parseInt(getFromLocalStorage("audioIndex"));
-  };
-  const getCurrentAudioStatus = () => {
-    let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
-    let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-    return local_conversation.audios[local_audio_index].status;
-  };
+    if (data.data.audio === null) {
+      alert(data.data.message);
+      setBetterResponse("");
+      setSelectedEmotion("");
+      setSelectedGender("");
+      setSelectedIntent("");
+      setSelectedResponse("");
+    }
+    setAudio(data.data.audio);
+    setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+    if (data.data.audio !== null) {
+      let ent = data.data.audio.nlp.entities;
+      let ent_str = "";
+      for (let i = 0; i < ent.length; i++) {
+        ent_str += ent[i].entity + " : " + ent[i].text + ";";
+      }
 
-  const getCurrentCallStatus = () => {
-    let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
-    return local_conversation.status;
+      setEntities(ent_str);
+      console.log("ENTITIES:", entities);
+    } else {
+      setEntities("");
+    }
+    setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+    setSelectedEmotion(
+      data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+    );
+    setSelectedIntent(
+      data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+    );
+    setSelectedResponse(
+      data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+    );
+
+    setMessages(
+      data.data.audio
+        ? [
+            {
+              id: 0,
+              author: "System",
+              type: "recieved",
+              content: "Voice message",
+              src: "data:audio/wav;base64," + data.data.audio.audio,
+              audio_id: data.data.audio._id,
+              timestamp: new Date().toTimeString().slice(0, 5),
+            },
+            {
+              id: 1,
+              author: "System",
+              type: "recieved",
+              content: "Transcription: " + data.data.audio.text,
+              src: "",
+              audio_id: data.data.audio._id,
+              timestamp: new Date().toTimeString().slice(0, 5),
+            },
+          ]
+        : []
+    );
   };
 
   const nextAudio = async () => {
+    // Get current audio index
+    let index = audio.index;
+    // Get next audio
     try {
-      let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-      let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
+      const data = await axios.get(
+        `${BACKEND_URI}/api/audios/index/${index + 1}`
+      );
 
-      if (local_audio_index + 1 >= local_conversation.audios.length) {
-        alert("No more audios to annotate in this conversation");
+      // const data = await axios.get(`${BACKEND_URI}/api/audios/random/waiting`);
+
+      // if (data.data.audio === null) {
+      //   alert(data.data.message);
+      //   setBetterResponse("");
+      //   setSelectedEmotion("");
+      //   setSelectedGender("");
+      //   setSelectedIntent("");
+      //   setSelectedResponse("");
+      // }
+      setAudio(data.data.audio);
+      setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+      if (data.data.audio !== null) {
+        let ent = data.data.audio.nlp.entities;
+        let ent_str = "";
+        for (let i = 0; i < ent.length; i++) {
+          ent_str += ent[i].entity + " : " + ent[i].text + ";";
+        }
+
+        setEntities(ent_str);
+        console.log("ENTITIES:", entities);
+      } else {
+        setEntities("");
+      }
+      setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+      setSelectedEmotion(
+        data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+      );
+      setSelectedIntent(
+        data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+      );
+      setSelectedResponse(
+        data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+      );
+
+      setMessages(
+        data.data.audio
+          ? [
+              {
+                id: 0,
+                author: "System",
+                type: "recieved",
+                content: "Voice message",
+                src: "data:audio/wav;base64," + data.data.audio.audio,
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+              {
+                id: 1,
+                author: "System",
+                type: "recieved",
+                content: "Transcription: " + data.data.audio.text,
+                src: "",
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+            ]
+          : []
+      );
+    } catch (error) {
+      if (error.response.status === 404) {
+        alert("No more audios to annotate");
         return;
       }
-      setAudioIndex(local_audio_index + 1);
-      setInLocalStorage("audioIndex", local_audio_index + 1);
-      displayAudio();
-    } catch (error) {
-      console.log(error);
-      return;
     }
   };
   const previousAudio = async () => {
-    try {
-      let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-      let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
+    // Get current audio index
+    let index = audio.index;
 
-      if (local_audio_index - 1 < 0) {
-        alert("Cannot Move Beyond the first audio in this conversation");
+    if (index - 1 < 0) {
+      alert("Cannot go back further than the first audio");
+      return;
+    }
+    // Get previous audio
+    try {
+      const data = await axios.get(
+        `${BACKEND_URI}/api/audios/index/${index - 1}`
+      );
+
+      // const data = await axios.get(`${BACKEND_URI}/api/audios/random/waiting`);
+
+      // if (data.data.audio === null) {
+      //   alert(data.data.message);
+      //   setBetterResponse("");
+      //   setSelectedEmotion("");
+      //   setSelectedGender("");
+      //   setSelectedIntent("");
+      //   setSelectedResponse("");
+      // }
+      setAudio(data.data.audio);
+      setCurrentTranscription(data.data.audio ? data.data.audio.text : "");
+      if (data.data.audio !== null) {
+        let ent = data.data.audio.nlp.entities;
+        let ent_str = "";
+        for (let i = 0; i < ent.length; i++) {
+          ent_str += ent[i].entity + " : " + ent[i].text + ";";
+        }
+
+        setEntities(ent_str);
+        console.log("ENTITIES:", entities);
+      } else {
+        setEntities("");
+      }
+      setSelectedGender(data.data.audio ? data.data.audio.nlp.gender : "");
+      setSelectedEmotion(
+        data.data.audio ? `${data.data.audio.nlp.emotion._id}` : ""
+      );
+      setSelectedIntent(
+        data.data.audio ? `${data.data.audio.nlp.intent._id}` : ""
+      );
+      setSelectedResponse(
+        data.data.audio ? `${data.data.audio.nlp.best_response._id}` : ""
+      );
+
+      setMessages(
+        data.data.audio
+          ? [
+              {
+                id: 0,
+                author: "System",
+                type: "recieved",
+                content: "Voice message",
+                src: "data:audio/wav;base64," + data.data.audio.audio,
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+              {
+                id: 1,
+                author: "System",
+                type: "recieved",
+                content: "Transcription: " + data.data.audio.text,
+                src: "",
+                audio_id: data.data.audio._id,
+                timestamp: new Date().toTimeString().slice(0, 5),
+              },
+            ]
+          : []
+      );
+    } catch (error) {
+      if (error.response.status === 404) {
+        alert("No more audios to annotate");
         return;
       }
-      setAudioIndex(local_audio_index - 1);
-      setInLocalStorage("audioIndex", local_audio_index - 1);
-      displayAudio();
-    } catch (error) {
-      console.log(error);
-      return;
     }
   };
   const updateMetadata = async () => {
@@ -284,23 +355,12 @@ const Page = (props) => {
     };
 
     try {
-      const local_conversation = JSON.parse(
-        getFromLocalStorage("conversation")
-      );
-      const local_index = parseInt(getFromLocalStorage("audioIndex"));
-      const local_audio = local_conversation.audios[local_index];
       const data = await axios.patch(
-        `${BACKEND_URI}/api/audios/${local_audio._id}`,
+        `${BACKEND_URI}/api/audios/${audio._id}`,
         payload
       );
 
       if (data.status === 200) {
-        local_audio.nlp = payload.nlp;
-        local_audio.status = "completed";
-        local_conversation.audios[local_index] = local_audio;
-        setInLocalStorage("conversation", JSON.stringify(local_conversation));
-        setConversation(local_conversation);
-
         alert("Metadata updated successfully");
       } else {
         alert("Error Updating Metadata");
@@ -396,28 +456,11 @@ const Page = (props) => {
                   {currentTranscription}
                 </textarea>
               </div>} */}
-              <div className="call-audio-stats">
-                <div className="current-audio-index">
-                  Call Index:{" "}
-                  {conversation
-                    ? conversationIndex
-                      ? conversationIndex
-                      : 0
-                    : "null"}
-                </div>
-                <div className="current-audio-index">
-                  Call Status: {conversation ? getCurrentCallStatus() : "null"}
-                </div>
-                <div className="current-audio-index">
-                  Audio Index:{" "}
-                  {conversation ? (audioIndex ? audioIndex : 0) : "null"}
-                </div>
-                <div className="current-audio-index">
-                  Audio Status:{" "}
-                  {conversation ? getCurrentAudioStatus() : "null"}
-                </div>
-              </div>
 
+              <div className="current-audio-index">
+                Current Audio Index:{" "}
+                {audio ? (audio.index ? audio.index : 0) : "null"}
+              </div>
               <div className="next-button">
                 <Button
                   key={"better-response"}
@@ -487,11 +530,8 @@ const Page = (props) => {
                   <span>Entities</span>
                   <br></br>
                 </span>
-                <Tooltip id="entities" className="light" />
 
                 <textarea
-                  data-tooltip-id="entities"
-                  data-tooltip-content="Comma Seperated values e.g name:john,age:25"
                   cols="1"
                   placeholder="Input Field"
                   legend="wash"
@@ -519,11 +559,7 @@ const Page = (props) => {
 
           {/* <div className="page-main-content1"> */}
 
-          <ChatApp
-            initialMessages={messages}
-            audioIndex={getCurrentAudioIndex()}
-            messageSetter={setMessages}
-          ></ChatApp>
+          <ChatApp initialMessages={messages}></ChatApp>
           {/* </div> */}
         </div>
         <div className="page-right">
@@ -585,13 +621,13 @@ const Page = (props) => {
                 ></textarea>
                 <span className="page-text11">Suggest Better Response</span>
               </div>
-              <div className="next-button">
+              {/* <div className="next-button">
                 <Button
                   key={"better-response"}
-                  text="Next Call"
-                  onClick={nextConversation}
+                  text="Fetch Audio"
+                  onClick={handleClick}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

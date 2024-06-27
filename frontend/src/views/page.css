@@ -218,6 +218,43 @@
   font-stretch: normal;
   text-decoration: none;
 }
+.page-section-text3-left {
+  top: 85px;
+  left: -15px;
+  color: rgb(0, 0, 0);
+  /* right: 0px; */
+  width: 228px;
+  height: auto;
+  margin: auto;
+  position: absolute;
+  font-size: 18px;
+  font-style: normal;
+  text-align: center;
+  font-family: "Inconsolata";
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
+
+.page-section-text3-middle {
+  top: 85px;
+  left: -15px;
+  color: rgb(0, 0, 0);
+  /* right: 0px; */
+  width: 228px;
+  height: auto;
+  margin: auto;
+  position: absolute;
+  font-size: 18px;
+  font-style: normal;
+  text-align: center;
+  font-family: "Inconsolata";
+  font-weight: 700;
+  line-height: normal;
+  font-stretch: normal;
+  text-decoration: none;
+}
 .page-divider1 {
   top: 111px;
   width: 100%;

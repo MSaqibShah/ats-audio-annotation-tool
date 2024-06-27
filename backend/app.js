@@ -12,6 +12,7 @@ const categoriesControllers = require("./controllers/categoriesControllers");
 const audioControllers = require("./controllers/audioControllers");
 const responseControllers = require("./controllers/responseControllers");
 const emotionControllers = require("./controllers/emotionControllers");
+const callControllers = require("./controllers/callControllers");
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
@@ -96,6 +97,20 @@ app
 
 app.get("/api/audios/random/waiting", audioControllers.getRandomWaitingAudio);
 app.get("/api/audios/index/:index", audioControllers.getSingleByIndex);
+
+// Call
+app
+  .route("/api/calls")
+  .get(callControllers.getAllCalls)
+  .post(callControllers.createCall);
+
+app
+  .route("/api/calls/:call_id")
+  .get(callControllers.getSingleCall)
+  .patch(callControllers.updateSingleCall)
+  .delete(callControllers.deleteSingleCall);
+
+app.route("/api/calls/index/:index").get(callControllers.getSingleCallByIndex);
 // 404 Route
 app.route("*").get((req, res) => {
   res.status(404).json({ message: "Resource Not Found" });

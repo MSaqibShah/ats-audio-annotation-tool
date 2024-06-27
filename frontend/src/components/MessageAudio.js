@@ -11,7 +11,6 @@ const MessageAudio = ({ src }) => {
     // Initialize audio object here to properly handle src updates
     if (!audioRef.current) audioRef.current = new Audio();
     const audio = audioRef.current;
-    console.log(src)
     audio.src = src; // Update src whenever it changes
 
     const onLoadedMetadata = () => {
