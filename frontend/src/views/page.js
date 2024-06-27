@@ -142,6 +142,7 @@ const Page = (props) => {
   };
 
   const fetchConversation = async () => {
+    console.log("FETCH CONVERSATION");
     try {
       let local_conversation_index = parseInt(
         getFromLocalStorage("conversationIndex")
@@ -166,6 +167,7 @@ const Page = (props) => {
       }
 
       const data = await response.json();
+      console.log(data);
 
       //  save conversation in local storage
       setInLocalStorage("conversation", JSON.stringify(data.data));
@@ -217,6 +219,14 @@ const Page = (props) => {
     return local_conversation.audios[local_audio_index].status;
   };
 
+  const checkConversationInLS = () => {
+    let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
+    if (local_conversation == null) {
+      return null;
+    } else {
+      return local_conversation;
+    }
+  };
   const getCurrentCallStatus = () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
     return local_conversation.status;
@@ -418,15 +428,20 @@ const Page = (props) => {
                     : "null"}
                 </div>
                 <div className="current-audio-index">
-                  Call Status: {conversation ? getCurrentCallStatus() : "null"}
+                  Call Status:{" "}
+                  {checkConversationInLS() ? getCurrentCallStatus() : "null"}
                 </div>
                 <div className="current-audio-index">
                   Audio Index:{" "}
-                  {conversation ? (audioIndex ? audioIndex : 0) : "null"}
+                  {checkConversationInLS()
+                    ? audioIndex
+                      ? audioIndex
+                      : 0
+                    : "null"}
                 </div>
                 <div className="current-audio-index">
                   Audio Status:{" "}
-                  {conversation ? getCurrentAudioStatus() : "null"}
+                  {checkConversationInLS() ? getCurrentAudioStatus() : "null"}
                 </div>
               </div>
 
