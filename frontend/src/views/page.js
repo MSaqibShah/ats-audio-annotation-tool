@@ -48,6 +48,18 @@ const Page = (props) => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
     let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
     let audio = local_conversation.audios[local_audio_index];
+    // check if the audio type
+
+    if (audio.type !== "sent") {
+      // convert the url to base64 string
+      let reader = new FileReader();
+      reader.readAsDataURL(audio.audio);
+      reader.onloadend = () => {
+        let base64data = reader.result;
+        audio.audio = base64data;
+        local_conversation.audios[local_audio_index] = audio;
+      };
+    }
 
     let newMessages = [];
     for (let i = 0; i <= local_audio_index; i++) {
