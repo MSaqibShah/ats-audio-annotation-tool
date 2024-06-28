@@ -36,8 +36,8 @@ const Page = (props) => {
   }
   useEffect(() => {
     clearLocalStrorage();
-    setInLocalStorage("audioIndex", 0);
     setInLocalStorage("conversationIndex", 0);
+    setInLocalStorage("audioIndex", 0);
     fetchConversation();
     fetchCategories();
   }, []);
@@ -235,7 +235,11 @@ const Page = (props) => {
   const getCurrentAudioStatus = () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
     let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
-    if (local_conversation === null) {
+    if (
+      local_conversation === null ||
+      local_conversation.audios.length === 0 ||
+      local_audio_index === null
+    ) {
       return "null";
     }
     return local_conversation.audios[local_audio_index].status;
