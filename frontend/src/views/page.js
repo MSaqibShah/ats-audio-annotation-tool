@@ -237,10 +237,10 @@ const Page = (props) => {
 
   const checkConversationInLS = () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
-    if (local_conversation == null) {
-      return null;
-    } else {
+    if (local_conversation !== null) {
       return local_conversation;
+    } else {
+      return undefined;
     }
   };
   const getCurrentCallStatus = () => {
