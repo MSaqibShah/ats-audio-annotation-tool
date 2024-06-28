@@ -158,6 +158,10 @@ const Page = (props) => {
     }
     setEntities(ent_str);
   };
+  function testEntitiesFormat(str) {
+    const pattern = /^\s*\w+\s*:\s*\w+(\s*;\s*\w+\s*:\s*\w+)*\s*$/;
+    return pattern.test(str);
+  }
 
   const fetchConversation = async () => {
     try {
@@ -323,9 +327,14 @@ const Page = (props) => {
       }
     }
 
+    if (!testEntitiesFormat(entities)) {
+      alert("Please check Entities Format");
+      return;
+    }
+
     let ents = entities.split(";");
     let entitiesArr = [];
-    for (let i = 0; i < ents.length - 1; i++) {
+    for (let i = 0; i < ents.length; i++) {
       let ent = ents[i].split(":");
       entitiesArr.push({
         entity: ent[0].trim(),
@@ -333,6 +342,7 @@ const Page = (props) => {
         label: "updated_entity",
       });
     }
+    console.log("entitiesArr", entitiesArr);
     const payload = {
       nlp: {
         emotion: selectedEmotion,
@@ -560,7 +570,7 @@ const Page = (props) => {
 
                 <textarea
                   data-tooltip-id="entities"
-                  data-tooltip-content="Comma Seperated values e.g name:john,age:25"
+                  data-tooltip-content=" format: name:john;age:25"
                   cols="1"
                   placeholder="Input Field"
                   legend="wash"

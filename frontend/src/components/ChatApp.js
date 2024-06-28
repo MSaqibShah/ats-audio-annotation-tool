@@ -101,7 +101,13 @@ const ChatApp = ({
   isDisabled,
 }) => {
   const [messages, setMessages] = useState(initialMessages);
-  const BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  // const BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  let BACKEND_URI = "";
+  if (config.NODE_ENV === "dev") {
+    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+  } else if (config.NODE_ENV === "prod") {
+    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+  }
 
   useEffect(() => {
     // This effect will run whenever `initialMessages` changes
