@@ -61,6 +61,7 @@ header {
 .author-wrapper {
   display: flex;
   flex-shrink: 0;
+  padding-left: 10px;
 }
 
 .message.received .author-wrapper,
@@ -105,9 +106,15 @@ header {
   color: #999;
   position: absolute;
   bottom: -20px;
-  right: 10px;
 }
 
+.timestamp-sent {
+  left: 10px;
+}
+
+.timestamp-received {
+  right: 10px;
+}
 .chat-input {
   padding: 10px;
   display: flex;

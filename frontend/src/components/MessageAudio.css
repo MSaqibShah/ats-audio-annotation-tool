@@ -7,7 +7,31 @@
   max-height: 43px;
   line-height: 5px;
   align-items: center;
-  color: #20a090;
+  /* color: #20a090; */
+}
+
+.custom-audio-player-recieved .time {
+  color: #20a090 !important;
+}
+
+.custom-audio-player-recieved .progress-bar {
+  background: #20a090 !important;
+}
+
+.custom-audio-player-received .play-pause-btn svg {
+  fill: #20a090 !important;
+}
+
+.custom-audio-player-sent .time {
+  color: #f2f7fb !important;
+}
+
+.custom-audio-player-sent .progress-bar {
+  background: #f2f7fb !important;
+}
+
+.custom-audio-player-sent svg {
+  fill: #f2f7fb !important;
 }
 
 .play-pause-btn {
@@ -17,9 +41,6 @@
   margin-right: 20px;
   font-size: 16px;
   line-height: 10px;
-  color: #20a090;
-  filter: invert(49%) sepia(77%) saturate(380%) hue-rotate(123deg)
-    brightness(91%) contrast(98%);
 }
 
 .progress-bar-container {

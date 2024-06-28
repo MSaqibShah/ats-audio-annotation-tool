@@ -9,6 +9,9 @@ const Message = ({ type, content, timestamp, author, src }) => {
   const isSent = type === "sent";
   const messageClasses = `message ${isSent ? "sent" : "received"}`;
   const authorWrapperClasses = `author-wrapper ${isSent ? "sent" : "received"}`;
+  const timestampClasses = `timestamp ${
+    isSent ? "timestamp-sent" : "timestamp-received"
+  }`;
   const isAudio = src !== "";
 
   return (
@@ -26,15 +29,15 @@ const Message = ({ type, content, timestamp, author, src }) => {
       )}
       <div className="message-content">
         <div className={authorWrapperClasses}>
-          <div className="author">{isSent ? "You" : author}</div>
+          <div className="author">{author}</div>
         </div>
         <div className="bubble">
           <div className="background">
             <div className="content">
-              {!isAudio ? content : <MessageAudio src={src} />}
+              {!isAudio ? content : <MessageAudio src={src} type={type} />}
             </div>
           </div>
-          <div className="timestamp">{timestamp}</div>
+          <div className={timestampClasses}>{timestamp}</div>
         </div>
       </div>
       {isSent && (
@@ -52,7 +55,7 @@ const Message = ({ type, content, timestamp, author, src }) => {
   );
 };
 
-const ChatInput = ({ onSend }) => {
+const ChatInput = ({ onSend, isDisabled }) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (event) => {
@@ -73,20 +76,30 @@ const ChatInput = ({ onSend }) => {
   return (
     <div className="chat-input">
       <textarea
+        disabled={isDisabled}
         type="text"
         placeholder="Type New Transcript Here"
         rows={5}
         value={inputValue}
         onChange={handleInputChange}
       />
-      <button onClick={handleSubmit} className="chat-input-btn">
+      <button
+        disabled={isDisabled}
+        onClick={handleSubmit}
+        className="chat-input-btn"
+      >
         ➤
       </button>
     </div>
   );
 };
 
-const ChatApp = ({ initialMessages, audioIndex, messageSetter }) => {
+const ChatApp = ({
+  initialMessages,
+  audioIndex,
+  messageSetter,
+  isDisabled,
+}) => {
   const [messages, setMessages] = useState(initialMessages);
   const BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
 
@@ -153,7 +166,7 @@ const ChatApp = ({ initialMessages, audioIndex, messageSetter }) => {
       <div className="messages">
         {messages && messages.map((msg) => <Message key={msg.id} {...msg} />)}
       </div>
-      <ChatInput onSend={handleSendMessage} />
+      <ChatInput onSend={handleSendMessage} isDisabled={isDisabled} />
     </div>
   );
 };

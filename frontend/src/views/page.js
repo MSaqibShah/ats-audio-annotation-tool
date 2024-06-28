@@ -25,6 +25,9 @@ const Page = (props) => {
   const [conversation, setConversation] = useState({});
   const [audioIndex, setAudioIndex] = useState(0);
   const [conversationIndex, setConversationIndex] = useState(0);
+
+  const [isDisabled, setIsDisabled] = useState(false);
+
   let BACKEND_URI = "";
   if (config.NODE_ENV === "dev") {
     BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
@@ -44,21 +47,28 @@ const Page = (props) => {
     displayMessages();
   };
 
-  const displayMessages = () => {
+  function convertBlobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  const displayMessages = async () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
     let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
     let audio = local_conversation.audios[local_audio_index];
     // check if the audio type
 
-    if (audio.type !== "sent") {
-      // convert the url to base64 string
-      let reader = new FileReader();
-      reader.readAsDataURL(audio.audio);
-      reader.onloadend = () => {
-        let base64data = reader.result;
-        audio.audio = base64data;
-        local_conversation.audios[local_audio_index] = audio;
-      };
+    if (audio.type === "recieved") {
+      try {
+        local_conversation.audios[local_audio_index].audio =
+          "data:audio/wav;base64," +
+          local_conversation.audios[local_audio_index].audio;
+      } catch (error) {
+        console.error("Failed to fetch and convert audio:", error);
+      }
     }
 
     let newMessages = [];
@@ -66,10 +76,11 @@ const Page = (props) => {
       newMessages.push({
         // id: local_conversation.audios.length + 1,
         id: `v_${i}`,
-        author: "System",
-        type: "recieved",
+        author: local_conversation.audios[i].author,
+        type: local_conversation.audios[i].type,
         content: "Voice message",
-        src: "data:audio/wav;base64," + local_conversation.audios[i].audio,
+        // src: "data:audio/wav;base64," + local_conversation.audios[i].audio,
+        src: local_conversation.audios[i].audio,
         db_id: `v_${local_conversation.audios[i]._id}`,
         audio_id: audio._id,
         timestamp: new Date().toTimeString().slice(0, 5),
@@ -77,8 +88,8 @@ const Page = (props) => {
       newMessages.push({
         // id: local_conversation.audios.length + 2,
         id: `t_${i}`,
-        author: "System", // Get from the backend
-        type: "recieved", // Get from the backend
+        author: local_conversation.audios[i].author, // Get from the backend
+        type: local_conversation.audios[i].type, // Get from the backend
         content: "Transcription: " + local_conversation.audios[i].text,
         src: "",
         db_id: `t_${local_conversation.audios[i]._id}`,
@@ -128,6 +139,13 @@ const Page = (props) => {
     let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
     let local_audio = local_conversation.audios[local_audio_index];
 
+    if (local_audio.type === "sent") {
+      // disable the metadata fields
+      setIsDisabled(true);
+      return;
+    } else {
+      setIsDisabled(false);
+    }
     setCurrentTranscription(local_audio.text);
     setSelectedEmotion(local_audio.nlp.emotion._id);
     setSelectedGender(local_audio.nlp.gender);
@@ -142,7 +160,6 @@ const Page = (props) => {
   };
 
   const fetchConversation = async () => {
-    console.log("FETCH CONVERSATION");
     try {
       let local_conversation_index = parseInt(
         getFromLocalStorage("conversationIndex")
@@ -167,7 +184,6 @@ const Page = (props) => {
       }
 
       const data = await response.json();
-      console.log(data);
 
       //  save conversation in local storage
       setInLocalStorage("conversation", JSON.stringify(data.data));
@@ -267,20 +283,31 @@ const Page = (props) => {
     }
   };
   const updateMetadata = async () => {
-    if (!selectedEmotion) {
-      alert("Please select an emotion");
-    }
+    console.log("isDisabled", isDisabled);
+    console.log("selectedEmotion", selectedEmotion);
+    console.log("selectedGender", selectedGender);
+    console.log("selectedIntent", selectedIntent);
+    console.log("selectedResponse", selectedResponse);
+    if (!isDisabled) {
+      if (!selectedEmotion) {
+        alert("Please select an emotion");
+        return;
+      }
 
-    if (!selectedGender) {
-      alert("Please select an gender");
-    }
+      if (!selectedGender) {
+        alert("Please select an gender");
+        return;
+      }
 
-    if (!selectedIntent) {
-      alert("Please select an intent");
-    }
+      if (!selectedIntent) {
+        alert("Please select an intent");
+        return;
+      }
 
-    if (!selectedResponse) {
-      alert("Please select an response");
+      if (!selectedResponse) {
+        alert("Please select an response");
+        return;
+      }
     }
 
     let ents = entities.split(";");
@@ -473,6 +500,7 @@ const Page = (props) => {
                   className="page-select"
                   value={selectedGender}
                   onChange={handleGenderChange}
+                  disabled={isDisabled}
                 >
                   <option className="page-option" value="">
                     Select Voice Type
@@ -493,6 +521,7 @@ const Page = (props) => {
                   className="page-select1"
                   value={selectedEmotion}
                   onChange={handleEmotionChange}
+                  disabled={isDisabled}
                 >
                   <option value="">Select Emotions</option>
                   {categories.emotions &&
@@ -526,6 +555,7 @@ const Page = (props) => {
                   id="entities"
                   value={entities}
                   onChange={(e) => setEntities(e.target.value)}
+                  disabled={isDisabled}
                 >
                   {entities}
                 </textarea>
@@ -550,6 +580,7 @@ const Page = (props) => {
             initialMessages={messages}
             audioIndex={getCurrentAudioIndex()}
             messageSetter={setMessages}
+            isDisabled={isDisabled}
           ></ChatApp>
           {/* </div> */}
         </div>
@@ -570,6 +601,7 @@ const Page = (props) => {
                   className="page-select2"
                   value={selectedIntent}
                   onChange={handleIntentChange}
+                  disabled={isDisabled}
                 >
                   <option value="">Select Intent</option>
                   {categories.intents &&
@@ -590,6 +622,7 @@ const Page = (props) => {
                   className="page-select3"
                   value={selectedResponse}
                   onChange={handleResponseChange}
+                  disabled={isDisabled}
                 >
                   <option value="">Select Bot Response</option>
                   {categories.responses &&
@@ -609,6 +642,7 @@ const Page = (props) => {
                   className="page-textarea1 textarea"
                   value={betterResponse}
                   onChange={(e) => setBetterResponse(e.target.value)}
+                  disabled={isDisabled}
                 ></textarea>
                 <span className="page-text11">Suggest Better Response</span>
               </div>

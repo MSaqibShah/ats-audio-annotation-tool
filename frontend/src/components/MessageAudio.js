@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./MessageAudio.css";
 
-const MessageAudio = ({ src }) => {
+const MessageAudio = ({ src, type }) => {
+  const isSent = type === "sent";
+  const playBtnClasses = `play-pause-btn ${
+    isSent ? "color-sent" : "color-received"
+  }`;
+
+  const customAudioPlayerClasses = `custom-audio-player ${
+    isSent ? "custom-audio-player-sent" : "custom-audio-player-received"
+  }`;
+  console.log("playBtnClasses", playBtnClasses);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -74,8 +83,8 @@ const MessageAudio = ({ src }) => {
   );
 
   return (
-    <div className="custom-audio-player">
-      <button onClick={togglePlayPause} className="play-pause-btn">
+    <div className={customAudioPlayerClasses}>
+      <button onClick={togglePlayPause} className={playBtnClasses}>
         {isPlaying ? pauseIcon : playIcon}
       </button>
       <div className="progress-bar-container">
