@@ -171,6 +171,9 @@ const Page = (props) => {
       if (!response.ok) {
         if (response.status === 404) {
           alert("No more conversations to annotate");
+          if (local_conversation_index === 0) {
+            return;
+          }
           // retain the last conversation index
           setInLocalStorage("conversationIndex", local_conversation_index - 1);
           setConversationIndex(local_conversation_index - 1);
@@ -232,6 +235,9 @@ const Page = (props) => {
   const getCurrentAudioStatus = () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
     let local_audio_index = parseInt(getFromLocalStorage("audioIndex"));
+    if (local_conversation === null) {
+      return "null";
+    }
     return local_conversation.audios[local_audio_index].status;
   };
 
@@ -245,6 +251,9 @@ const Page = (props) => {
   };
   const getCurrentCallStatus = () => {
     let local_conversation = JSON.parse(getFromLocalStorage("conversation"));
+    if (local_conversation === null) {
+      return "null";
+    }
     return local_conversation.status;
   };
 
