@@ -252,7 +252,7 @@ module.exports = {
       }
 
       // update the status of the audio to processing
-      audio.status = "processing";
+      audio.status = "pending";
       await audio.save();
       await audio.populate("nlp.intent");
       await audio.populate("nlp.best_response");

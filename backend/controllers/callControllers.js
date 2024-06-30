@@ -131,7 +131,7 @@ module.exports = {
         if (!CALL_STATUSES.includes(data.status)) {
           return res.status(400).json({
             message:
-              "invalid status, should be one of waiting, processing, completed, missing-information",
+              "invalid status, should be one of 'pending' or 'completed'",
           });
         }
         call.status = data.status;
