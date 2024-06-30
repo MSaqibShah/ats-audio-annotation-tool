@@ -175,11 +175,7 @@ const Page = (props) => {
       if (!response.ok) {
         if (response.status === 404) {
           alert("No more conversations to annotate");
-          if (local_conversation_index === 0) {
-            setInLocalStorage("conversationIndex", local_conversation_index);
-            setConversationIndex(local_conversation_index);
-            return;
-          }
+
           // retain the last conversation index
           setInLocalStorage("conversationIndex", local_conversation_index - 1);
           setConversationIndex(local_conversation_index - 1);
