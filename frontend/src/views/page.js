@@ -189,14 +189,13 @@ const Page = (props) => {
       }
 
       const data = await response.json();
+      setInLocalStorage("audioIndex", 0);
+      setAudioIndex(0);
 
       //  save conversation in local storage
       setInLocalStorage("conversation", JSON.stringify(data.data));
 
       setConversation(data.data);
-
-      setInLocalStorage("audioIndex", 0);
-      setAudioIndex(0);
 
       if (data.data.audios.length == 0) {
         alert("No more convercations to annotate");
