@@ -61,18 +61,34 @@ const Page = (props) => {
     let audio = local_conversation.audios[local_audio_index];
     // check if the audio type
 
-    if (audio.type === "recieved") {
-      try {
-        local_conversation.audios[local_audio_index].audio =
-          "data:audio/wav;base64," +
-          local_conversation.audios[local_audio_index].audio;
-      } catch (error) {
-        console.error("Failed to fetch and convert audio:", error);
-      }
-    }
-
     let newMessages = [];
     for (let i = 0; i <= local_audio_index; i++) {
+      if (local_conversation.audios[i].type === "recieved") {
+        // try {
+        //   local_conversation.audios[local_audio_index].audio =
+        //     "data:audio/wav;base64," +
+        //     local_conversation.audios[local_audio_index].audio;
+        // } catch (error) {
+        //   console.error("Failed to fetch and convert audio:", error);
+        // }
+        const binaryString = atob(local_conversation.audios[i].audio);
+
+        // Create an array buffer and view to convert the binary string to binary data
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        // Create a Blob from the binary data
+        const blob = new Blob([bytes], { type: "audio/wav" });
+
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
+
+        local_conversation.audios[i].audio = url;
+      }
+
       newMessages.push({
         // id: local_conversation.audios.length + 1,
         id: `v_${i}`,
@@ -273,6 +289,7 @@ const Page = (props) => {
       }
       setAudioIndex(local_audio_index + 1);
       setInLocalStorage("audioIndex", local_audio_index + 1);
+
       displayAudio();
     } catch (error) {
       console.log(error);
@@ -288,8 +305,8 @@ const Page = (props) => {
         alert("Cannot Move Beyond the first audio in this conversation");
         return;
       }
-      setAudioIndex(local_audio_index - 1);
       setInLocalStorage("audioIndex", local_audio_index - 1);
+      setAudioIndex(local_audio_index - 1);
       displayAudio();
     } catch (error) {
       console.log(error);
@@ -339,7 +356,6 @@ const Page = (props) => {
         label: "updated_entity",
       });
     }
-    console.log("entitiesArr", entitiesArr);
     const payload = {
       nlp: {
         emotion: selectedEmotion,

@@ -10,7 +10,6 @@ const MessageAudio = ({ src, type }) => {
   const customAudioPlayerClasses = `custom-audio-player ${
     isSent ? "custom-audio-player-sent" : "custom-audio-player-received"
   }`;
-  console.log("playBtnClasses", playBtnClasses);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -29,9 +28,15 @@ const MessageAudio = ({ src, type }) => {
     const onTimeUpdate = () => {
       setCurrentTime(audio.currentTime);
     };
-
+    const onEnd = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+      // Reset audio to beginning
+      audio.currentTime = 0;
+    };
     audio.addEventListener("loadedmetadata", onLoadedMetadata);
     audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnd);
 
     // Play/Pause state
     if (isPlaying) {
@@ -49,7 +54,8 @@ const MessageAudio = ({ src, type }) => {
     return () => {
       audio.removeEventListener("loadedmetadata", onLoadedMetadata);
       audio.removeEventListener("timeupdate", onTimeUpdate);
-      audio.pause(); // Optionally pause audio on cleanup
+      audio.removeEventListener("ended", onEnd);
+      audio.pause();
     };
   }, [isPlaying, src]);
 
@@ -83,7 +89,7 @@ const MessageAudio = ({ src, type }) => {
   );
 
   return (
-    <div className={customAudioPlayerClasses}>
+    <div className={customAudioPlayerClasses} src={src}>
       <button onClick={togglePlayPause} className={playBtnClasses}>
         {isPlaying ? pauseIcon : playIcon}
       </button>

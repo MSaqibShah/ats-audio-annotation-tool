@@ -251,7 +251,6 @@ module.exports = {
           .json({ message: "No new audio found", audio: null });
       }
 
-      // update the status of the audio to processing
       audio.status = "pending";
       await audio.save();
       await audio.populate("nlp.intent");
