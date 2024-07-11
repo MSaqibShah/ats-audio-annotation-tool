@@ -1,9 +1,22 @@
 const dotenv = require("dotenv");
 
-if (process.env.NODE_ENV === undefined){
+delete process.env.NODE_ENV;
+delete process.env.MONGO_DB_URI_DEV;
+delete process.env.BACKEND_PORT_DEV;
+delete process.env.FRONTEND_PORT_DEV;
+delete process.env.BACKEND_URL_DEV;
+delete process.env.FRONTEND_URL_DEV;
+delete process.env.MONGO_DB_URI_PROD;
+delete process.env.MONGO_DB_USER_PROD;
+delete process.env.MONGO_DB_PASS_PROD;
+delete process.env.BACKEND_PORT_PROD;
+delete process.env.FRONTEND_PORT_PROD;
+delete process.env.BACKEND_URL_PROD;
+delete process.env.FRONTEND_URL_PROD;
+
+if (process.env.NODE_ENV === undefined) {
   dotenv.config({ path: "../.env" });
 }
-
 
 const dev_end = {
   MONGO_DB_URI: process.env.MONGO_DB_URI_DEV || "mongodb://localhost/ats_tool",
@@ -23,7 +36,6 @@ const prod_end = {
   FRONTEND_URL: process.env.FRONTEND_URL_PROD,
 };
 const NODE_ENV = process.env.NODE_ENV || "dev";
-
 
 let config = NODE_ENV === "dev" ? dev_end : prod_end;
 config.NODE_ENV = NODE_ENV;

@@ -12,6 +12,7 @@ const categoriesControllers = require("./controllers/categoriesControllers");
 const audioControllers = require("./controllers/audioControllers");
 const responseControllers = require("./controllers/responseControllers");
 const emotionControllers = require("./controllers/emotionControllers");
+const entityControllers = require("./controllers/entityControllers");
 const callControllers = require("./controllers/callControllers");
 
 const app = express();
@@ -80,6 +81,20 @@ app
   .route("/api/audios/categories/emotions")
   .post(emotionControllers.createEmotion)
   .get(emotionControllers.getAllEmotions);
+
+// ENTITIES
+
+app
+  .route("/api/audios/categories/entities/:id")
+  .get(entityControllers.getSingleEntity)
+  .patch(entityControllers.updateSingleEntity)
+  .delete(entityControllers.deleteSingleEntity);
+
+app
+  .route("/api/audios/categories/entities")
+  .post(entityControllers.createEntity)
+  .get(entityControllers.getAllEntities);
+
 // CATEGORIES
 app.route("/api/audios/categories").get(categoriesControllers.getAllCategories);
 
