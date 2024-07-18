@@ -3,10 +3,10 @@ import { useHistory } from "react-router-dom";
 
 import { Helmet } from "react-helmet";
 
-import "./response.css";
+import "./entities.css";
 import ChatApp from "../components/ChatApp";
 import Button from "../components/Button";
-import ResponsesTable from "../components/responseTable";
+import EntitiesTable from "../components/entitiesTable";
 import config from "../config";
 
 import axios from "axios";
@@ -18,45 +18,46 @@ if (config.NODE_ENV === "dev") {
   BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
 }
 
-const Responses = (props) => {
-  // State to store responses data
-  const [responses, setResponses] = useState([]);
-  const [newResponsesName, setNewResponsesName] = useState("");
+const Entities = (props) => {
+  // State to store entities data
+  const [entities, setEntities] = useState([]);
+  const [newEntitiesName, setNewEntitiesName] = useState("");
   // Empty dependency array means this effect runs once on mount
 
-  const handleAddResponses = async (e) => {
+  const handleAddEntities = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${BACKEND_URI}/api/audios/categories/responses`, // Update the URL as per your API endpoint
+        `${BACKEND_URI}/api/audios/categories/entities`, // Update the URL as per your API endpoint
         {
-          text: newResponsesName,
+          entity_key: newEntitiesName,
         }
       );
-      if (response.status === 200) {
-        // reload the responses table
-        fetchResponses();
-        setNewResponsesName(""); // Reset the input fields
+      console.log(response);
+      if (response.status === 201) {
+        // reload the entities table
+        fetchEntities();
+        setNewEntitiesName(""); // Reset the input fields
       }
     } catch (error) {
-      console.error("Error adding new responses:", error);
+      console.error("Error adding new entities:", error);
     }
   };
 
   useEffect(() => {
-    fetchResponses();
+    fetchEntities();
   }, []);
 
-  const fetchResponses = async () => {
+  const fetchEntities = async () => {
     try {
       const response = await axios.get(
-        `${BACKEND_URI}/api/audios/categories/responses`
+        `${BACKEND_URI}/api/audios/categories/entities`
       ); // Update the URL path as per your API endpoint
-      if (response.data && response.data.responses) {
-        setResponses(response.data.responses);
+      if (response.data && response.data.entities) {
+        setEntities(response.data.entities);
       }
     } catch (error) {
-      console.error("Error fetching responses data:", error);
+      console.error("Error fetching entities data:", error);
     }
   };
 
@@ -111,35 +112,31 @@ const Responses = (props) => {
       />
 
       <Helmet>
-        <title>Responses</title>
+        <title>Entities</title>
         <meta property="og:title" content="Page - exported project" />
       </Helmet>
       <div className="page-main">
         <div className="page-middle">
-          <span className="page-section-text1">Responses</span>
+          <span className="page-section-text1">Entities</span>
           <img
             alt="Line11012"
             src="/external/line11012-t6g.svg"
             className="page-divider1"
           />
 
-          {console.log("responses", responses)}
-          <ResponsesTable
-            responses={responses}
-            fetchResponses={fetchResponses}
-          />
+          <EntitiesTable entities={entities} fetchEntities={fetchEntities} />
 
-          <div className="add-responses-form">
-            <form onSubmit={handleAddResponses}>
+          <div className="add-entities-form">
+            <form onSubmit={handleAddEntities}>
               <input
                 type="text"
-                value={newResponsesName}
-                onChange={(e) => setNewResponsesName(e.target.value)}
-                placeholder="Responses Name"
+                value={newEntitiesName}
+                onChange={(e) => setNewEntitiesName(e.target.value)}
+                placeholder="Entities Name"
                 required
               />
 
-              <button type="submit">Add Response</button>
+              <button type="submit">Add Entity</button>
             </form>
           </div>
         </div>
@@ -148,4 +145,4 @@ const Responses = (props) => {
   );
 };
 
-export default Responses;
+export default Entities;

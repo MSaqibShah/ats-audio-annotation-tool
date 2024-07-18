@@ -458,7 +458,7 @@
   width: 120px;
 }
 
-.f-btn-h {
+.f-btn-en {
   display: block !important;
   position: absolute;
   left: 0;
@@ -468,6 +468,15 @@
   width: 120px;
 }
 
+.f-btn-h {
+  display: block !important;
+  position: absolute;
+  left: 0;
+  top: 242px;
+  padding-left: -10px;
+  margin-left: -7px !important;
+  width: 120px;
+}
 #entities {
   height: 60px;
 }

@@ -28,6 +28,9 @@ const Page = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
 
+  const [audioEntities, setAudioEntities] = useState({});
+  const [currentEntity, setCurrentEntity] = useState("");
+
   let BACKEND_URI = "";
   if (config.NODE_ENV === "dev") {
     BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
@@ -168,11 +171,14 @@ const Page = (props) => {
     setSelectedIntent(local_audio.nlp.intent._id);
     setSelectedResponse(local_audio.nlp.best_response._id);
     let ent = local_audio.nlp.entities;
-    let ent_str = "";
+
+    // form audioEntities
+    let audioEntitiesCopy = {};
     for (let i = 0; i < ent.length; i++) {
-      ent_str += ent[i].entity + " : " + ent[i].text + ";";
+      audioEntitiesCopy[ent[i].entity] = ent[i].text;
     }
-    setEntities(ent_str);
+    // setEntities(ent_str);
+    setAudioEntities(audioEntitiesCopy);
   };
   function testEntitiesFormat(str) {
     const pattern = /^\s*\w+\s*:\s*\w+(\s*;\s*\w+\s*:\s*\w+)*\s*$/;
@@ -341,18 +347,12 @@ const Page = (props) => {
       }
     }
 
-    if (!testEntitiesFormat(entities)) {
-      alert("Please check Entities Format");
-      return;
-    }
-
-    let ents = entities.split(";");
     let entitiesArr = [];
-    for (let i = 0; i < ents.length; i++) {
-      let ent = ents[i].split(":");
+
+    for (const [key, value] of Object.entries(audioEntities)) {
       entitiesArr.push({
-        entity: ent[0].trim(),
-        text: ent[1].trim(),
+        entity: key,
+        text: value.trim(),
         label: "updated_entity",
       });
     }
@@ -403,6 +403,22 @@ const Page = (props) => {
     setSelectedEmotion(event.target.value);
   };
 
+  const handleEntityKeyChange = (event) => {
+    setCurrentEntity(event.target.value);
+    // let audioEntitiesCopy = { ...audioEntities };
+
+    // audioEntitiesCopy[`${event.target.value}`] = "";
+
+    // setAudioEntities(audioEntitiesCopy);
+  };
+
+  const handleEntityValueChange = (event) => {
+    let audioEntitiesCopy = { ...audioEntities };
+    audioEntitiesCopy[currentEntity] = event.target.value;
+    setAudioEntities(audioEntitiesCopy);
+    console.log("audioEntities", audioEntities);
+  };
+
   const handleIntentChange = (event) => {
     setSelectedIntent(event.target.value);
   };
@@ -425,9 +441,15 @@ const Page = (props) => {
     navigate.push("/response"); // Specify the path you want to redirect to
   };
 
+  const handleNavigateEntities = () => {
+    navigate.push("/entities"); // Specify the path you want to redirect to
+  };
+
   const handleNavigateHome = () => {
     navigate.push("/"); // Specify the path you want to redirect to
   };
+
+  const getCurrentEntityIndex = () => {};
   return (
     <div className="page-container">
       <Button
@@ -446,6 +468,11 @@ const Page = (props) => {
         onClick={handleNavigateResponse}
       />
 
+      <Button
+        className={"f-btn-en"}
+        text={"Entities"}
+        onClick={handleNavigateEntities}
+      />
       <Button
         className={"f-btn-h"}
         text={"Home"}
@@ -573,7 +600,48 @@ const Page = (props) => {
                   <span>Emotions</span>
                 </span>
               </div>
+              <div className="page-entities">
+                <select
+                  className="page-select1"
+                  value={currentEntity}
+                  onChange={handleEntityKeyChange}
+                  disabled={isDisabled}
+                >
+                  <option value="">Select Entity Name</option>
+                  {categories.entities &&
+                    categories.entities.map((entity) => {
+                      return (
+                        <option key={entity._id} value={entity.entity_key}>
+                          {entity.entity_key}
+                        </option>
+                      );
+                    })}
+                </select>
+                <span className="page-text08">
+                  <span>Entity Name</span>
+                </span>
+                <textarea
+                  cols="1"
+                  placeholder="Enter Entity Value"
+                  legend="wash"
+                  className="page-textarea textarea"
+                  id="entities"
+                  value={
+                    currentEntity && audioEntities[currentEntity]
+                      ? audioEntities[currentEntity]
+                      : ""
+                  }
+                  onChange={handleEntityValueChange}
+                  // disabled={isDisabled}
+                >
+                  {entities}
+                </textarea>
+                <span className="page-text009">
+                  <span>Entity Value</span>
+                </span>
+              </div>
 
+              {/*       
               <div className="page-current-transcription">
                 <span className="page-text06">
                   <span>Entities</span>
@@ -596,6 +664,7 @@ const Page = (props) => {
                   {entities}
                 </textarea>
               </div>
+              */}
               {/* <div className="next-button">
                 <Button text="Update Metadata" onClick={updateMetadata} />
               </div> */}

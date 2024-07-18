@@ -12,11 +12,11 @@ import config from "../config";
 import axios from "axios";
 
 let BACKEND_URI = "";
-  if (config.NODE_ENV === "dev") {
-    BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
-  } else if (config.NODE_ENV === "prod") {
-    BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
-  }
+if (config.NODE_ENV === "dev") {
+  BACKEND_URI = config.BACKEND_URL + ":" + config.BACKEND_PORT;
+} else if (config.NODE_ENV === "prod") {
+  BACKEND_URI = config.FRONTEND_URL + ":" + config.BACKEND_PORT;
+}
 
 const Emotions = (props) => {
   // State to store emotions data
@@ -74,6 +74,9 @@ const Emotions = (props) => {
     navigate.push("/response"); // Specify the path you want to redirect to
   };
 
+  const handleNavigateEntities = () => {
+    navigate.push("/entities"); // Specify the path you want to redirect to
+  };
   const handleNavigateHome = () => {
     navigate.push("/"); // Specify the path you want to redirect to
   };
@@ -95,6 +98,11 @@ const Emotions = (props) => {
         onClick={handleNavigateResponse}
       />
 
+      <Button
+        className={"f-btn-en"}
+        text={"Entities"}
+        onClick={handleNavigateEntities}
+      />
       <Button
         className={"f-btn-h"}
         text={"Home"}
