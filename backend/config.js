@@ -1,18 +1,18 @@
 const dotenv = require("dotenv");
 
-delete process.env.NODE_ENV;
-delete process.env.MONGO_DB_URI_DEV;
-delete process.env.BACKEND_PORT_DEV;
-delete process.env.FRONTEND_PORT_DEV;
-delete process.env.BACKEND_URL_DEV;
-delete process.env.FRONTEND_URL_DEV;
-delete process.env.MONGO_DB_URI_PROD;
-delete process.env.MONGO_DB_USER_PROD;
-delete process.env.MONGO_DB_PASS_PROD;
-delete process.env.BACKEND_PORT_PROD;
-delete process.env.FRONTEND_PORT_PROD;
-delete process.env.BACKEND_URL_PROD;
-delete process.env.FRONTEND_URL_PROD;
+// delete process.env.NODE_ENV;
+// delete process.env.MONGO_DB_URI_DEV;
+// delete process.env.BACKEND_PORT_DEV;
+// delete process.env.FRONTEND_PORT_DEV;
+// delete process.env.BACKEND_URL_DEV;
+// delete process.env.FRONTEND_URL_DEV;
+// delete process.env.MONGO_DB_URI_PROD;
+// delete process.env.MONGO_DB_USER_PROD;
+// delete process.env.MONGO_DB_PASS_PROD;
+// delete process.env.BACKEND_PORT_PROD;
+// delete process.env.FRONTEND_PORT_PROD;
+// delete process.env.BACKEND_URL_PROD;
+// delete process.env.FRONTEND_URL_PROD;
 
 if (process.env.NODE_ENV === undefined) {
   dotenv.config({ path: "../.env" });
